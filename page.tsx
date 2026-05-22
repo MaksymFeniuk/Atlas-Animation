@@ -426,25 +426,27 @@ function AnimationDetailModal({
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="p-6 space-y-6">
-                {/* Preview Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">Live Preview</h3>
-                  <div className="w-full bg-dark-800 rounded-lg border border-dark-700 overflow-hidden p-8 flex items-center justify-center h-64">
-                    <motion.div
-                      key={`${speed}-${scale}`}
-                      initial={config.initial}
-                      animate={config.animate}
-                      transition={config.transition}
-                      className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
-                      style={{ width: actualSize, height: actualSize }}
-                    />
-                  </div>
+            <div className="flex-1 overflow-hidden flex">
+              {/* Left Column - Preview */}
+              <div className="flex-shrink-0 w-1/2 border-r border-dark-700 p-6 flex flex-col items-center justify-center bg-dark-800/50">
+                <h3 className="text-lg font-semibold text-white mb-4 w-full">Preview</h3>
+                <div className="w-full h-full bg-dark-800 rounded-lg border border-dark-700 overflow-hidden p-8 flex items-center justify-center">
+                  <motion.div
+                    key={`${speed}-${scale}`}
+                    initial={config.initial}
+                    animate={config.animate}
+                    transition={config.transition}
+                    className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
+                    style={{ width: actualSize, height: actualSize }}
+                  />
                 </div>
+              </div>
 
+              {/* Right Column - Settings, Code, Documentation */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {/* Settings Sliders */}
                 <div className="space-y-6 bg-dark-800/50 p-4 rounded-lg border border-dark-700">
+                  <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Settings</h3>
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <label className="text-sm font-semibold text-white">Speed</label>
@@ -488,24 +490,24 @@ function AnimationDetailModal({
 
                 {/* Code Section */}
                 <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-white">Code</h3>
+                  <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Code</h3>
                   <div className="relative">
-                    <pre className="bg-dark-800 border border-dark-700 rounded-lg p-4 text-sm text-green-400 overflow-x-auto font-mono max-h-48">
+                    <pre className="bg-dark-800 border border-dark-700 rounded-lg p-3 text-xs text-green-400 overflow-x-auto font-mono max-h-40">
                       {details.code}
                     </pre>
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={copyCode}
-                      className="absolute top-3 right-3 px-3 py-1.5 bg-accent-500 hover:bg-accent-600 text-white text-xs font-semibold rounded-lg flex items-center gap-2 transition-smooth"
+                      className="absolute top-2 right-2 px-2 py-1 bg-accent-500 hover:bg-accent-600 text-white text-xs font-semibold rounded flex items-center gap-1 transition-smooth"
                     >
                       {copied ? (
                         <>
-                          <Check size={16} /> Copied!
+                          <Check size={14} /> Copied!
                         </>
                       ) : (
                         <>
-                          <Copy size={16} /> Copy
+                          <Copy size={14} /> Copy
                         </>
                       )}
                     </motion.button>
@@ -514,16 +516,16 @@ function AnimationDetailModal({
 
                 {/* Documentation */}
                 <div className="space-y-3 pb-6">
-                  <h3 className="text-lg font-semibold text-white">Documentation</h3>
-                  <p className="text-dark-300 text-sm leading-relaxed">{details.documentation}</p>
+                  <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Documentation</h3>
+                  <p className="text-dark-300 text-xs leading-relaxed">{details.documentation}</p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 text-xs font-medium bg-accent-500/20 text-accent-400 rounded border border-accent-500/30">
+                    <span className="px-2 py-1 text-xs font-medium bg-accent-500/20 text-accent-400 rounded border border-accent-500/30">
                       {animation.motionBehavior}
                     </span>
-                    <span className="px-3 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
+                    <span className="px-2 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
                       {animation.interactionPattern}
                     </span>
-                    <span className="px-3 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
+                    <span className="px-2 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
                       {animation.visualCharacter}
                     </span>
                   </div>
