@@ -401,43 +401,43 @@ function AnimationDetailModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
           />
 
-          {/* Modal */}
+          {/* Side Panel Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0, x: 400 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 400 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="fixed top-0 right-0 h-screen w-full md:w-[600px] lg:w-[700px] xl:w-[800px] bg-dark-900 border-l border-dark-700 z-50 flex flex-col overflow-hidden"
           >
-            <div className="bg-dark-900 border border-dark-700 rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-              {/* Header */}
-              <div className="sticky top-0 bg-dark-900 border-b border-dark-700 px-6 py-4 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-white">{animation.title}</h2>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onClose}
-                  className="p-2 hover:bg-dark-800 rounded-lg transition-smooth"
-                >
-                  <X size={24} />
-                </motion.button>
-              </div>
+            {/* Header */}
+            <div className="flex-shrink-0 border-b border-dark-700 px-6 py-4 flex items-center justify-between bg-dark-900/95 backdrop-blur-sm">
+              <h2 className="text-2xl font-bold text-white truncate">{animation.title}</h2>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onClose}
+                className="flex-shrink-0 p-2 hover:bg-dark-800 rounded-lg transition-smooth ml-4"
+              >
+                <X size={24} />
+              </motion.button>
+            </div>
 
-              {/* Content */}
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto">
               <div className="p-6 space-y-6">
                 {/* Preview Section */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-white">Live Preview</h3>
-                  <div className="w-full bg-dark-800 rounded-lg border border-dark-700 overflow-hidden p-12 flex items-center justify-center min-h-[300px]">
+                  <div className="w-full bg-dark-800 rounded-lg border border-dark-700 overflow-hidden p-8 flex items-center justify-center h-64">
                     <motion.div
                       key={`${speed}-${scale}`}
                       initial={config.initial}
                       animate={config.animate}
                       transition={config.transition}
-                      className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
+                      className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
                       style={{ width: actualSize, height: actualSize }}
                     />
                   </div>
@@ -490,7 +490,7 @@ function AnimationDetailModal({
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold text-white">Code</h3>
                   <div className="relative">
-                    <pre className="bg-dark-800 border border-dark-700 rounded-lg p-4 text-sm text-green-400 overflow-x-auto font-mono">
+                    <pre className="bg-dark-800 border border-dark-700 rounded-lg p-4 text-sm text-green-400 overflow-x-auto font-mono max-h-48">
                       {details.code}
                     </pre>
                     <motion.button
@@ -513,7 +513,7 @@ function AnimationDetailModal({
                 </div>
 
                 {/* Documentation */}
-                <div className="space-y-3">
+                <div className="space-y-3 pb-6">
                   <h3 className="text-lg font-semibold text-white">Documentation</h3>
                   <p className="text-dark-300 text-sm leading-relaxed">{details.documentation}</p>
                   <div className="flex flex-wrap gap-2">
