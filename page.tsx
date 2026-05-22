@@ -358,7 +358,7 @@ function AnimationDetailModal({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const actualSpeed = details.defaultSpeed * speed
+  const actualSpeed = details.defaultSpeed / speed
   const actualSize = details.defaultSize * scale
 
   const previewVariants = {
