@@ -280,11 +280,22 @@ function FilterSection({
       <div className="space-y-2">
         {options.map((option) => (
           <label key={option} className="flex items-center gap-3 cursor-pointer group">
+            <div
+              className={`flex-shrink-0 w-5 h-5 rounded-full border-2 transition-all duration-200 flex items-center justify-center ${
+                selectedOptions.includes(option)
+                  ? 'bg-accent-500 border-accent-500'
+                  : 'border-dark-500 bg-transparent'
+              }`}
+            >
+              {selectedOptions.includes(option) && (
+                <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+              )}
+            </div>
             <input
               type="checkbox"
               checked={selectedOptions.includes(option)}
               onChange={() => onToggle(option)}
-              className="w-4 h-4 rounded border-dark-600 bg-dark-700 cursor-pointer accent-accent-500"
+              className="hidden"
             />
             <span className="text-sm text-dark-300 group-hover:text-white transition-colors">
               {option}
@@ -301,21 +312,17 @@ function Sidebar({
   selectedMotion,
   selectedInteraction,
   selectedVisual,
-  onlyFavorites,
   onMotionToggle,
   onInteractionToggle,
   onVisualToggle,
-  onFavoritesToggle,
   onDeselectAll,
 }: {
   selectedMotion: string[]
   selectedInteraction: string[]
   selectedVisual: string[]
-  onlyFavorites: boolean
   onMotionToggle: (option: string) => void
   onInteractionToggle: (option: string) => void
   onVisualToggle: (option: string) => void
-  onFavoritesToggle: () => void
   onDeselectAll: () => void
 }) {
   const motionBehaviors: MotionBehavior[] = ['Fade', 'Slide', 'Scale', 'Morph', 'Rotate']
@@ -324,20 +331,6 @@ function Sidebar({
 
   return (
     <div className="space-y-6">
-      {/* Favorites */}
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={onFavoritesToggle}
-        className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${
-          onlyFavorites
-            ? 'bg-accent-500 text-white'
-            : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
-        }`}
-      >
-        ♥ Favorites
-      </motion.button>
-
       {/* Filter Sections */}
       <FilterSection
         title="Motion Behaviour"
@@ -465,26 +458,30 @@ export default function Home() {
     <div className="min-h-screen bg-dark-900">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-dark-800 bg-dark-900/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4 mb-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-4 py-4">
             {/* Logo */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-2xl font-bold bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent"
+              className="h-12 flex items-center"
             >
-              OWOW Atlas
+              <img
+                src="/atlas-logo.png"
+                alt="OWOW Atlas"
+                className="h-full w-auto"
+              />
             </motion.div>
 
             {/* Desktop Navigation & Search */}
-            <div className="hidden md:flex items-center gap-6 flex-1">
+            <div className="hidden md:flex items-center gap-6 flex-1 ml-32">
               {/* Tabs */}
               <div className="flex gap-1">
                 {(['All', 'Website', 'Mobile'] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveCategory(tab)}
-                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-smooth ${
+                    className={`px-3 py-1.5 rounded-lg font-medium text-sm transition-smooth ${
                       activeCategory === tab
                         ? 'bg-accent-500 text-white'
                         : 'text-dark-400 hover:text-white'
@@ -526,7 +523,7 @@ export default function Home() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="md:hidden space-y-3"
+                className="md:hidden space-y-3 pb-4"
               >
                 {/* Tabs */}
                 <div className="flex gap-2">
@@ -570,18 +567,35 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Desktop Sidebar */}
           <aside className="hidden md:block">
-            <div className="sticky top-24 p-6 bg-dark-800/50 backdrop-blur-xs border border-dark-700 rounded-lg">
-              <Sidebar
-                selectedMotion={selectedMotion}
-                selectedInteraction={selectedInteraction}
-                selectedVisual={selectedVisual}
-                onlyFavorites={onlyFavorites}
-                onMotionToggle={handleMotionToggle}
-                onInteractionToggle={handleInteractionToggle}
-                onVisualToggle={handleVisualToggle}
-                onFavoritesToggle={() => setOnlyFavorites(!onlyFavorites)}
-                onDeselectAll={handleDeselectAll}
-              />
+            <div className="sticky top-24 bg-dark-800/50 backdrop-blur-xs border border-dark-700 rounded-lg overflow-hidden flex flex-col max-h-[calc(100vh-120px)]">
+              {/* Favorites - Always Visible */}
+              <div className="p-6 flex-shrink-0 border-b border-dark-700">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setOnlyFavorites(!onlyFavorites)}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${
+                    onlyFavorites
+                      ? 'bg-accent-500 text-white'
+                      : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
+                  }`}
+                >
+                  ♥ Favorites
+                </motion.button>
+              </div>
+
+              {/* Scrollable Filters */}
+              <div className="overflow-y-auto flex-1 p-6">
+                <Sidebar
+                  selectedMotion={selectedMotion}
+                  selectedInteraction={selectedInteraction}
+                  selectedVisual={selectedVisual}
+                  onMotionToggle={handleMotionToggle}
+                  onInteractionToggle={handleInteractionToggle}
+                  onVisualToggle={handleVisualToggle}
+                  onDeselectAll={handleDeselectAll}
+                />
+              </div>
             </div>
           </aside>
 
@@ -597,19 +611,36 @@ export default function Home() {
               >
                 <motion.div
                   onClick={(e) => e.stopPropagation()}
-                  className="absolute left-0 top-0 bottom-0 w-64 bg-dark-900 border-r border-dark-800 p-6 overflow-y-auto"
+                  className="absolute left-0 top-0 bottom-0 w-64 bg-dark-900 border-r border-dark-800 overflow-hidden flex flex-col"
                 >
-                  <Sidebar
-                    selectedMotion={selectedMotion}
-                    selectedInteraction={selectedInteraction}
-                    selectedVisual={selectedVisual}
-                    onlyFavorites={onlyFavorites}
-                    onMotionToggle={handleMotionToggle}
-                    onInteractionToggle={handleInteractionToggle}
-                    onVisualToggle={handleVisualToggle}
-                    onFavoritesToggle={() => setOnlyFavorites(!onlyFavorites)}
-                    onDeselectAll={handleDeselectAll}
-                  />
+                  {/* Favorites - Always Visible */}
+                  <div className="p-6 flex-shrink-0 border-b border-dark-800">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setOnlyFavorites(!onlyFavorites)}
+                      className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${
+                        onlyFavorites
+                          ? 'bg-accent-500 text-white'
+                          : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
+                      }`}
+                    >
+                      ♥ Favorites
+                    </motion.button>
+                  </div>
+
+                  {/* Scrollable Filters */}
+                  <div className="overflow-y-auto flex-1 p-6">
+                    <Sidebar
+                      selectedMotion={selectedMotion}
+                      selectedInteraction={selectedInteraction}
+                      selectedVisual={selectedVisual}
+                      onMotionToggle={handleMotionToggle}
+                      onInteractionToggle={handleInteractionToggle}
+                      onVisualToggle={handleVisualToggle}
+                      onDeselectAll={handleDeselectAll}
+                    />
+                  </div>
                 </motion.div>
               </motion.div>
             )}
