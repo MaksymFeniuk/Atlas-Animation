@@ -160,7 +160,13 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
 ]
 
 // Animation Preview Component
-function AnimationPreview({ type }: { type: MotionBehavior }) {
+function AnimationPreview({
+  type,
+  large = false,
+}: {
+  type: MotionBehavior
+  large?: boolean
+}) {
   const previewVariants = {
     Fade: {
       initial: { opacity: 1 },
@@ -192,12 +198,12 @@ function AnimationPreview({ type }: { type: MotionBehavior }) {
   const config = previewVariants[type]
 
   return (
-    <div className="flex items-center justify-center w-full h-32">
+    <div className={`flex items-center justify-center w-full ${large ? 'h-80' : 'h-32'}`}>
       <motion.div
         initial={config.initial}
         animate={config.animate}
         transition={config.transition}
-        className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
+        className={`${large ? 'w-28 h-28' : 'w-12 h-12'} bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg`}
       />
     </div>
   )
@@ -208,19 +214,29 @@ function AnimationCardComponent({
   card,
   isFavorite,
   onToggleFavorite,
+  onSelect,
 }: {
   card: AnimationCard
   isFavorite: boolean
   onToggleFavorite: (id: string) => void
+  onSelect: (id: string) => void
 }) {
   return (
     <motion.div
       layout
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(card.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onSelect(card.id)
+        }
+      }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
-      className="card-hover group"
+      className="card-hover group cursor-pointer"
     >
       <div className="p-4 space-y-4">
         {/* Preview Area */}
@@ -234,7 +250,10 @@ function AnimationCardComponent({
           <motion.button
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onToggleFavorite(card.id)}
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleFavorite(card.id)
+            }}
             className="mt-0.5 flex-shrink-0 text-dark-400 hover:text-accent-500 transition-colors"
           >
             <Heart
@@ -261,6 +280,173 @@ function AnimationCardComponent({
     </motion.div>
   )
 }
+
+function getAnimationCode(card: AnimationCard) {
+  switch (card.motionBehavior) {
+    case 'Fade':
+      return `import { motion } from 'framer-motion'
+
+export default function FadeAnimation() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="h-16 w-16 rounded-lg bg-purple-500"
+    />
+  )
+}`
+
+    case 'Slide':
+      return `import { motion } from 'framer-motion'
+
+export default function SlideAnimation() {
+  return (
+    <motion.div
+      initial={{ x: -40 }}
+      animate={{ x: 40 }}
+      transition={{ duration: 1, repeat: Infinity, repeatType: 'reverse' }}
+      className="h-16 w-16 rounded-lg bg-purple-500"
+    />
+  )
+}`
+
+    case 'Scale':
+      return `import { motion } from 'framer-motion'
+
+export default function ScaleAnimation() {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.2 }}
+      transition={{ duration: 0.2 }}
+      className="h-16 w-16 rounded-lg bg-purple-500"
+    />
+  )
+}`
+
+    case 'Morph':
+      return `import { motion } from 'framer-motion'
+
+export default function MorphAnimation() {
+  return (
+    <motion.div
+      animate={{ borderRadius: ['50%', '10%', '50%'] }}
+      transition={{ duration: 1.5, repeat: Infinity }}
+      className="h-16 w-16 bg-purple-500"
+    />
+  )
+}`
+
+    case 'Rotate':
+      return `import { motion } from 'framer-motion'
+
+export default function RotateAnimation() {
+  return (
+    <motion.div
+      animate={{ rotate: 360 }}
+      transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+      className="h-16 w-16 rounded-lg bg-purple-500"
+    />
+  )
+}`
+  }
+}
+
+function AnimationDetail({
+  card,
+  onBack,
+  onToggleFavorite,
+}: {
+  card: AnimationCard
+  onBack: () => void
+  onToggleFavorite: (id: string) => void
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 16 }}
+      className="space-y-6"
+    >
+      <button
+        onClick={onBack}
+        className="text-sm text-dark-400 hover:text-white transition-colors"
+      >
+        ← Back to library
+      </button>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="p-6 bg-dark-800/50 border border-dark-700 rounded-lg space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-white">{card.title}</h2>
+              <p className="text-sm text-dark-400 mt-1">
+                {card.category} animation
+              </p>
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.15 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onToggleFavorite(card.id)}
+              className="text-dark-400 hover:text-accent-500 transition-colors"
+            >
+              <Heart
+                size={22}
+                fill={card.isFavorite ? 'currentColor' : 'none'}
+                stroke="currentColor"
+              />
+            </motion.button>
+          </div>
+
+          <div className="bg-dark-900 rounded-lg border border-dark-700 overflow-hidden">
+            <AnimationPreview type={card.motionBehavior} large />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <span className="px-3 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
+              {card.motionBehavior}
+            </span>
+            <span className="px-3 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
+              {card.interactionPattern}
+            </span>
+            <span className="px-3 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
+              {card.visualCharacter}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-6 bg-dark-800/50 border border-dark-700 rounded-lg">
+          <h3 className="text-lg font-semibold text-white mb-4">Documentation</h3>
+
+          <div className="space-y-3 text-sm text-dark-300 leading-relaxed">
+            <p>
+              This animation uses the <strong>{card.motionBehavior}</strong> motion behaviour.
+            </p>
+            <p>
+              It is designed for the <strong>{card.interactionPattern}</strong> interaction pattern.
+            </p>
+            <p>
+              The visual style is <strong>{card.visualCharacter}</strong>.
+            </p>
+            <p>
+              Use this animation when you want to add motion to a {card.category.toLowerCase()} interface.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-6 bg-dark-800/50 border border-dark-700 rounded-lg">
+        <h3 className="text-lg font-semibold text-white mb-4">Code</h3>
+
+        <pre className="overflow-x-auto rounded-lg bg-dark-900 border border-dark-700 p-4 text-sm text-dark-200">
+          <code>{getAnimationCode(card)}</code>
+        </pre>
+      </div>
+    </motion.div>
+  )
+}
+
 
 // FilterSection Component
 function FilterSection({
@@ -330,8 +516,8 @@ function Sidebar({
         whileTap={{ scale: 0.98 }}
         onClick={onFavoritesToggle}
         className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${onlyFavorites
-            ? 'bg-accent-500 text-white'
-            : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
+          ? 'bg-accent-500 text-white'
+          : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
           }`}
       >
         ♥ Favorites
@@ -380,6 +566,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('')
   const [activeCategory, setActiveCategory] = useState<Category>('All')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [selectedAnimationId, setSelectedAnimationId] = useState<string | null>(null)
 
   // Filtered animations
   const filteredAnimations = useMemo(() => {
@@ -425,6 +612,9 @@ export default function Home() {
     searchTerm,
     activeCategory,
   ])
+  const selectedAnimation = useMemo(() => {
+    return animations.find((anim) => anim.id === selectedAnimationId) ?? null
+  }, [animations, selectedAnimationId])
 
   const toggleFavorite = (id: string) => {
     setAnimations((prevAnimations) =>
@@ -488,8 +678,8 @@ export default function Home() {
                     key={tab}
                     onClick={() => setActiveCategory(tab)}
                     className={`px-4 py-2 rounded-lg font-medium text-sm transition-smooth ${activeCategory === tab
-                        ? 'bg-accent-500 text-white'
-                        : 'text-dark-400 hover:text-white'
+                      ? 'bg-accent-500 text-white'
+                      : 'text-dark-400 hover:text-white'
                       }`}
                   >
                     {tab}
@@ -540,8 +730,8 @@ export default function Home() {
                         setMobileMenuOpen(false)
                       }}
                       className={`px-3 py-1.5 rounded-lg font-medium text-sm transition-smooth ${activeCategory === tab
-                          ? 'bg-accent-500 text-white'
-                          : 'text-dark-400 hover:text-white'
+                        ? 'bg-accent-500 text-white'
+                        : 'text-dark-400 hover:text-white'
                         }`}
                     >
                       {tab}
@@ -616,30 +806,48 @@ export default function Home() {
             )}
           </AnimatePresence>
 
-          {/* Animation Cards Grid */}
+          {/* Animation Cards Grid / Detail View */}
           <section className="md:col-span-3">
-            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence mode="popLayout">
-                {filteredAnimations.length > 0 ? (
-                  filteredAnimations.map((anim) => (
-                    <AnimationCardComponent
-                      key={anim.id}
-                      card={anim}
-                      isFavorite={anim.isFavorite}
-                      onToggleFavorite={toggleFavorite}
-                    />
-                  ))
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="col-span-full text-center py-12"
-                  >
-                    <p className="text-dark-400">No animations found. Try adjusting your filters.</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
+            <AnimatePresence mode="wait">
+              {selectedAnimation ? (
+                <AnimationDetail
+                  key={selectedAnimation.id}
+                  card={selectedAnimation}
+                  onBack={() => setSelectedAnimationId(null)}
+                  onToggleFavorite={toggleFavorite}
+                />
+              ) : (
+                <motion.div
+                  key="library-grid"
+                  layout
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
+                  <AnimatePresence mode="popLayout">
+                    {filteredAnimations.length > 0 ? (
+                      filteredAnimations.map((anim) => (
+                        <AnimationCardComponent
+                          key={anim.id}
+                          card={anim}
+                          isFavorite={anim.isFavorite}
+                          onToggleFavorite={toggleFavorite}
+                          onSelect={setSelectedAnimationId}
+                        />
+                      ))
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="col-span-full text-center py-12"
+                      >
+                        <p className="text-dark-400">
+                          No animations found. Try adjusting your filters.
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         </div>
       </main>
