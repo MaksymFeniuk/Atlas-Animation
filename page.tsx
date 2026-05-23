@@ -464,31 +464,35 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-dark-900">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-dark-800 bg-dark-900/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4 mb-4">
+      <header className="sticky top-0 z-40 border-b border-dark-800 backdrop-blur-md" style={{ backgroundColor: '#101012', height: '100px' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+          <div className="flex items-center justify-between gap-4 h-full">
             {/* Logo */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-2xl font-bold bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent"
+              className="flex flex-col items-center"
             >
-              OWOW Atlas
+              <svg width="162" height="34" viewBox="0 0 162 34" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: '20px' }}>
+                <path d="M29.6756 29.1184C26.3302 32.3786 22.2118 33.9903 17.3576 33.9903C12.4663 33.9903 8.34798 32.3786 5.03768 29.1184C1.65515 25.8582 0 21.832 0 16.9951C0 12.1583 1.65515 8.13014 5.00059 4.87186C8.34798 1.61164 12.4663 0 17.3557 0C22.2489 0 26.3673 1.61164 29.6756 4.87186C33.023 8.13208 34.6782 12.1622 34.6782 16.9951C34.6782 21.8301 33.023 25.8601 29.6756 29.1184ZM27.1773 16.9951C27.1773 14.0654 26.2209 11.575 24.3432 9.48711C22.4695 7.39917 20.1156 6.37269 17.3557 6.37269C14.5997 6.37269 12.2809 7.39917 10.3701 9.48711C8.49632 11.575 7.53992 14.0654 7.53992 16.9951C7.53992 19.9249 8.49632 22.4152 10.3701 24.4662C12.2438 26.5172 14.5997 27.5437 17.3576 27.5437C20.1156 27.5437 22.4324 26.5192 24.3452 24.4682C26.2189 22.4522 27.1773 19.9618 27.1773 16.9951ZM45.9656 19.6682L51.8113 0.732918H59.4977L65.3083 19.6682L71.8898 0.732918H79.8709L68.3609 33.6248H62.8802L55.6389 10.7683L48.4679 33.6248H42.9891L31.4791 0.769855H39.4582L45.9656 19.6682ZM106.347 29.1184C103 32.3786 98.8817 33.9903 94.0275 33.9903C89.1382 33.9903 85.0178 32.3786 81.7095 29.1184C78.3621 25.8582 76.7069 21.8301 76.7069 16.9951C76.7069 12.1602 78.3621 8.13014 81.7095 4.87186C85.0198 1.61164 89.1401 0 94.0294 0C98.9188 0 103.039 1.61164 106.349 4.87186C109.695 8.13208 111.35 12.1622 111.35 16.9951C111.35 21.8301 109.693 25.8601 106.347 29.1184ZM103.849 16.9951C103.849 14.0654 102.893 11.575 101.017 9.48711C99.1432 7.39917 96.7874 6.37269 94.0294 6.37269C91.2715 6.37269 88.9547 7.39917 87.0419 9.48711C85.1681 11.575 84.2117 14.0654 84.2117 16.9951C84.2117 19.9249 85.1681 22.4152 87.0419 24.4662C88.9176 26.5172 91.2715 27.5437 94.0294 27.5437C96.7874 27.5437 99.1042 26.5192 101.017 24.4682C102.891 22.4522 103.849 19.9618 103.849 16.9951ZM122.637 19.6682L128.489 0.732918H136.175L141.984 19.6682L148.567 0.732918H156.547L145 33.6248H139.521L132.274 10.7683L125.103 33.6248H119.624L108.151 0.769855H116.13L122.637 19.6682ZM151.585 28.8151C151.585 31.7935 153.878 34 156.781 34C159.709 34 162 31.7935 162 28.8151C162 25.8349 159.707 23.6283 156.781 23.6283C153.878 23.6283 151.585 25.8349 151.585 28.8151ZM160.973 28.8151C160.973 31.323 159.183 33.1213 156.781 33.1213C154.402 33.1213 152.612 31.3211 152.612 28.8151C152.612 26.3073 154.402 24.5071 156.781 24.5071C159.182 24.5071 160.973 26.3073 160.973 28.8151ZM154.599 25.9418V31.6438H156.039V29.6278H156.586C157.542 29.6278 157.601 30.4773 157.644 31.0819C157.663 31.3463 157.677 31.5641 157.765 31.6438H159.228V31.5796C159.123 31.5446 159.098 31.3016 159.064 30.977C158.996 30.2868 158.891 29.2312 157.893 29.0718V29.0504C158.616 28.8793 159.117 28.4088 159.117 27.6137C159.117 26.5425 158.397 25.9418 157.021 25.9418H154.599ZM156.65 28.4924H156.039V27.0149H156.65C157.218 27.0149 157.743 27.1218 157.743 27.742C157.743 28.3641 157.218 28.4924 156.65 28.4924Z" fill="white"/>
+              </svg>
+              <div className="text-xs font-bold font-13 text-white tracking-wider mt-0" style={{ fontFamily: 'PP Neue Montreal', marginLeft: '90px' }}>ATLAS</div>
             </motion.div>
 
             {/* Desktop Navigation & Search */}
-            <div className="hidden md:flex items-center gap-6 flex-1">
+            <div className="hidden md:flex items-center justify-center gap-4 flex-1" style={{ marginLeft: '40px' }}>
               {/* Tabs */}
-              <div className="flex gap-1">
+              <div className="flex gap-1 px-3 rounded-lg items-center" style={{ backgroundColor: '#131313', height: '40px' }}>
                 {(['All', 'Website', 'Mobile'] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveCategory(tab)}
-                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-smooth ${
-                      activeCategory === tab
-                        ? 'bg-accent-500 text-white'
-                        : 'text-dark-400 hover:text-white'
-                    }`}
+                    className="px-4 rounded-lg font-medium text-sm transition-smooth uppercase flex items-center justify-center"
+                    style={{
+                      fontFamily: 'PP Neue Montreal',
+                      padding: '6px 25px',
+                      ...(activeCategory === tab ? { backgroundColor: '#1847BD', color: 'white' } : { color: '#white' })
+                    }}
                   >
                     {tab}
                   </button>
@@ -496,15 +500,16 @@ export default function Home() {
               </div>
 
               {/* Search */}
-              <div className="ml-auto flex-1 max-w-xs">
-                <div className="relative">
+              <div className="ml-auto flex-1 max-w-md">
+                <div className="relative h-full">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500" size={18} />
                   <input
                     type="text"
-                    placeholder="Search animations..."
+                    placeholder="Search"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-dark-800 border border-dark-700 rounded-lg text-sm text-white placeholder-dark-500 focus:outline-none focus:border-accent-500/50 transition-smooth"
+                    className="w-full pl-10 pr-4 bg-dark-800 border border-dark-700 text-sm text-white placeholder-dark-500 focus:outline-none focus:border-accent-500/50 transition-smooth"
+                    style={{ fontFamily: 'PP Neue Montreal', borderRadius: '12px', height: '40px' }}
                   />
                 </div>
               </div>
@@ -526,10 +531,10 @@ export default function Home() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="md:hidden space-y-3"
+                className="md:hidden space-y-3 pb-4 pt-4"
               >
                 {/* Tabs */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 px-3 rounded-lg" style={{ backgroundColor: '#131313', height: '40px' }}>
                   {(['All', 'Website', 'Mobile'] as const).map((tab) => (
                     <button
                       key={tab}
@@ -537,11 +542,12 @@ export default function Home() {
                         setActiveCategory(tab)
                         setMobileMenuOpen(false)
                       }}
-                      className={`px-3 py-1.5 rounded-lg font-medium text-sm transition-smooth ${
-                        activeCategory === tab
-                          ? 'bg-accent-500 text-white'
-                          : 'text-dark-400 hover:text-white'
-                      }`}
+                      className="px-3 rounded-lg font-medium text-sm transition-smooth uppercase flex items-center justify-center"
+                      style={{
+                        fontFamily: 'PP Neue Montreal',
+                        padding: '6px 25px',
+                        ...(activeCategory === tab ? { backgroundColor: '#1847BD', color: 'white' } : { color: '#666' })
+                      }}
                     >
                       {tab}
                     </button>
@@ -553,10 +559,11 @@ export default function Home() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500" size={18} />
                   <input
                     type="text"
-                    placeholder="Search animations..."
+                    placeholder="Search"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-dark-800 border border-dark-700 rounded-lg text-sm text-white placeholder-dark-500 focus:outline-none focus:border-accent-500/50 transition-smooth"
+                    className="w-full pl-10 pr-4 bg-dark-800 border border-dark-700 text-sm text-white placeholder-dark-500 focus:outline-none focus:border-accent-500/50 transition-smooth"
+                    style={{ fontFamily: 'PP Neue Montreal', borderRadius: '12px', height: '40px' }}
                   />
                 </div>
               </motion.div>
