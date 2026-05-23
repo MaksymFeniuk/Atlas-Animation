@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Menu, X, Heart } from 'lucide-react'
+import { AlertCircle, ArrowLeft, Check, Copy, Heart, Menu, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react'
 
 // Types
 type MotionBehavior = 'Fade' | 'Slide' | 'Scale' | 'Morph' | 'Rotate'
@@ -18,6 +18,36 @@ interface AnimationCard {
   interactionPattern: InteractionPattern
   visualCharacter: VisualCharacter
   isFavorite: boolean
+}
+
+interface AnimationParameters {
+  duration: string
+  opacity: string
+  distance: string
+  scale: string
+  rotation: string
+  borderRadius: string
+}
+
+interface ValidatedParameters {
+  values: {
+    duration: number
+    opacity: number
+    distance: number
+    scale: number
+    rotation: number
+    borderRadius: number
+  }
+  errors: Partial<Record<keyof AnimationParameters, string>>
+}
+
+const DEFAULT_PARAMETERS: AnimationParameters = {
+  duration: '1.5',
+  opacity: '0.3',
+  distance: '40',
+  scale: '1.2',
+  rotation: '360',
+  borderRadius: '8',
 }
 
 // Sample data
@@ -159,45 +189,96 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
   },
 ]
 
+function validateParameters(params: AnimationParameters): ValidatedParameters {
+  const specs: Record<keyof AnimationParameters, { min: number; max: number; label: string }> = {
+    duration: { min: 0.1, max: 10, label: 'Duration' },
+    opacity: { min: 0, max: 1, label: 'Opacity' },
+    distance: { min: 0, max: 200, label: 'Distance' },
+    scale: { min: 0.2, max: 3, label: 'Scale' },
+    rotation: { min: -1080, max: 1080, label: 'Rotation' },
+    borderRadius: { min: 0, max: 50, label: 'Radius' },
+  }
+
+  const fallbackValues = {
+    duration: Number(DEFAULT_PARAMETERS.duration),
+    opacity: Number(DEFAULT_PARAMETERS.opacity),
+    distance: Number(DEFAULT_PARAMETERS.distance),
+    scale: Number(DEFAULT_PARAMETERS.scale),
+    rotation: Number(DEFAULT_PARAMETERS.rotation),
+    borderRadius: Number(DEFAULT_PARAMETERS.borderRadius),
+  }
+  const values = { ...fallbackValues }
+  const errors: ValidatedParameters['errors'] = {}
+
+  ;(Object.keys(specs) as Array<keyof AnimationParameters>).forEach((key) => {
+    const rawValue = params[key].trim()
+    const numericValue = Number(rawValue)
+    const spec = specs[key]
+
+    if (rawValue === '' || Number.isNaN(numericValue)) {
+      errors[key] = `${spec.label} must be a number.`
+      return
+    }
+
+    if (numericValue < spec.min || numericValue > spec.max) {
+      errors[key] = `${spec.label} must be between ${spec.min} and ${spec.max}.`
+      return
+    }
+
+    values[key] = numericValue
+  })
+
+  return { values, errors }
+}
+
 // Animation Preview Component
-function AnimationPreview({ type }: { type: MotionBehavior }) {
+function AnimationPreview({
+  type,
+  parameters = DEFAULT_PARAMETERS,
+  large = false,
+}: {
+  type: MotionBehavior
+  parameters?: AnimationParameters
+  large?: boolean
+}) {
+  const { values } = validateParameters(parameters)
   const previewVariants = {
     Fade: {
       initial: { opacity: 1 },
-      animate: { opacity: 0.3 },
-      transition: { duration: 1.5, repeat: Infinity, repeatType: 'reverse' as const },
+      animate: { opacity: values.opacity },
+      transition: { duration: values.duration, repeat: Infinity, repeatType: 'reverse' as const },
     },
     Slide: {
-      initial: { x: -20 },
-      animate: { x: 20 },
-      transition: { duration: 1.5, repeat: Infinity, repeatType: 'reverse' as const },
+      initial: { x: -values.distance },
+      animate: { x: values.distance },
+      transition: { duration: values.duration, repeat: Infinity, repeatType: 'reverse' as const },
     },
     Scale: {
       initial: { scale: 1 },
-      animate: { scale: 1.2 },
-      transition: { duration: 1.5, repeat: Infinity, repeatType: 'reverse' as const },
+      animate: { scale: values.scale },
+      transition: { duration: values.duration, repeat: Infinity, repeatType: 'reverse' as const },
     },
     Morph: {
       initial: { borderRadius: '50%' },
-      animate: { borderRadius: '0%' },
-      transition: { duration: 1.5, repeat: Infinity, repeatType: 'reverse' as const },
+      animate: { borderRadius: `${values.borderRadius}%` },
+      transition: { duration: values.duration, repeat: Infinity, repeatType: 'reverse' as const },
     },
     Rotate: {
       initial: { rotate: 0 },
-      animate: { rotate: 360 },
-      transition: { duration: 2, repeat: Infinity, ease: 'linear' as const },
+      animate: { rotate: values.rotation },
+      transition: { duration: values.duration, repeat: Infinity, ease: 'linear' as const },
     },
   }
 
   const config = previewVariants[type]
 
   return (
-    <div className="flex items-center justify-center w-full h-32">
+    <div className={`flex items-center justify-center w-full ${large ? 'h-80' : 'h-32'}`}>
       <motion.div
         initial={config.initial}
         animate={config.animate}
         transition={config.transition}
-        className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
+        className={`${large ? 'w-28 h-28' : 'w-12 h-12'} bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg`}
       />
     </div>
   )
@@ -208,19 +289,30 @@ function AnimationCardComponent({
   card,
   isFavorite,
   onToggleFavorite,
+  onSelect,
 }: {
   card: AnimationCard
   isFavorite: boolean
   onToggleFavorite: (id: string) => void
+  onSelect: (id: string) => void
 }) {
   return (
     <motion.div
       layout
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(card.id)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onSelect(card.id)
+        }
+      }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
-      className="card-hover group"
+      className="card-hover group cursor-pointer"
     >
       <div className="p-4 space-y-4">
         {/* Preview Area */}
@@ -234,8 +326,12 @@ function AnimationCardComponent({
           <motion.button
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onToggleFavorite(card.id)}
+            onClick={(event) => {
+              event.stopPropagation()
+              onToggleFavorite(card.id)
+            }}
             className="mt-0.5 flex-shrink-0 text-dark-400 hover:text-accent-500 transition-colors"
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             <Heart
               size={18}
@@ -258,6 +354,320 @@ function AnimationCardComponent({
           </span>
         </div>
       </div>
+    </motion.div>
+  )
+}
+
+function getAnimationCode(card: AnimationCard, params: AnimationParameters) {
+  const { values, errors } = validateParameters(params)
+
+  if (Object.keys(errors).length > 0) {
+    return 'Fix invalid inputs to generate copyable code.'
+  }
+
+  const transition =
+    card.motionBehavior === 'Rotate'
+      ? `transition={{ duration: ${values.duration}, repeat: Infinity, ease: 'linear' }}`
+      : `transition={{ duration: ${values.duration}, repeat: Infinity, repeatType: 'reverse' }}`
+
+  const motionProps = {
+    Fade: `initial={{ opacity: 1 }}
+      animate={{ opacity: ${values.opacity} }}`,
+    Slide: `initial={{ x: -${values.distance} }}
+      animate={{ x: ${values.distance} }}`,
+    Scale: `initial={{ scale: 1 }}
+      animate={{ scale: ${values.scale} }}`,
+    Morph: `initial={{ borderRadius: '50%' }}
+      animate={{ borderRadius: '${values.borderRadius}%' }}`,
+    Rotate: `initial={{ rotate: 0 }}
+      animate={{ rotate: ${values.rotation} }}`,
+  }
+
+  return `import { motion } from 'framer-motion'
+
+export default function ${card.motionBehavior}Animation() {
+  return (
+    <motion.div
+      ${motionProps[card.motionBehavior]}
+      ${transition}
+      className="h-16 w-16 rounded-lg bg-gradient-to-br from-accent-500 to-accent-600"
+    />
+  )
+}`
+}
+
+function ParameterInput({
+  id,
+  label,
+  unit,
+  value,
+  error,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  id: keyof AnimationParameters
+  label: string
+  unit: string
+  value: string
+  error?: string
+  min: number
+  max: number
+  step: number
+  onChange: (id: keyof AnimationParameters, value: string) => void
+}) {
+  const numericValue = Number(value)
+  const sliderValue = Number.isFinite(numericValue) ? Math.min(Math.max(numericValue, min), max) : min
+
+  return (
+    <div className="rounded-lg border border-dark-700 bg-dark-900/70 p-4">
+      <label className="block space-y-3">
+        <span className="flex items-center justify-between gap-3">
+          <span className="text-sm font-semibold text-white">{label}</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-dark-400">{unit}</span>
+        </span>
+
+        <div className="grid grid-cols-[minmax(0,1fr)_88px] items-center gap-3">
+          <input
+            type="range"
+            min={min}
+            max={max}
+            step={step}
+            value={sliderValue}
+            onChange={(event) => onChange(id, event.target.value)}
+            className="h-2 w-full cursor-pointer accent-accent-500"
+          />
+          <input
+            type="number"
+            min={min}
+            max={max}
+            step={step}
+            value={value}
+            onChange={(event) => onChange(id, event.target.value)}
+            className={`h-10 w-full rounded-lg border bg-dark-800 px-3 text-sm font-semibold text-white outline-none transition-smooth ${
+              error ? 'border-red-500 focus:border-red-400' : 'border-dark-600 focus:border-accent-500/60'
+            }`}
+          />
+        </div>
+      </label>
+
+      <div className="mt-2 flex items-center justify-between text-xs text-dark-400">
+        <span>{min}</span>
+        <span>{max}</span>
+      </div>
+
+      {error && (
+        <div className="mt-3 flex items-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-300">
+          <AlertCircle size={14} />
+          {error}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function AnimationDetail({
+  card,
+  onBack,
+  onToggleFavorite,
+}: {
+  card: AnimationCard
+  onBack: () => void
+  onToggleFavorite: (id: string) => void
+}) {
+  const [parameters, setParameters] = useState<AnimationParameters>(DEFAULT_PARAMETERS)
+  const [copied, setCopied] = useState(false)
+  const validation = useMemo(() => validateParameters(parameters), [parameters])
+  const code = useMemo(() => getAnimationCode(card, parameters), [card, parameters])
+  const errorCount = Object.keys(validation.errors).length
+  const hasErrors = errorCount > 0
+  const parameterFields: Record<
+    keyof AnimationParameters,
+    { label: string; unit: string; min: number; max: number; step: number }
+  > = {
+    duration: { label: 'Duration', unit: 'seconds', min: 0.1, max: 10, step: 0.1 },
+    opacity: { label: 'Fade opacity', unit: '0 to 1', min: 0, max: 1, step: 0.1 },
+    distance: { label: 'Slide distance', unit: 'pixels', min: 0, max: 200, step: 1 },
+    scale: { label: 'Scale target', unit: 'ratio', min: 0.2, max: 3, step: 0.1 },
+    rotation: { label: 'Rotation', unit: 'degrees', min: -1080, max: 1080, step: 15 },
+    borderRadius: { label: 'Morph radius', unit: 'percent', min: 0, max: 50, step: 1 },
+  }
+  const visibleParameterIds: Array<keyof AnimationParameters> = useMemo(() => {
+    const parameterByMotion: Record<MotionBehavior, Array<keyof AnimationParameters>> = {
+      Fade: ['duration', 'opacity'],
+      Slide: ['duration', 'distance'],
+      Scale: ['duration', 'scale'],
+      Morph: ['duration', 'borderRadius'],
+      Rotate: ['duration', 'rotation'],
+    }
+
+    return parameterByMotion[card.motionBehavior]
+  }, [card.motionBehavior])
+
+  const updateParameter = (id: keyof AnimationParameters, value: string) => {
+    setParameters((current) => ({ ...current, [id]: value }))
+    setCopied(false)
+  }
+
+  const resetParameters = () => {
+    setParameters(DEFAULT_PARAMETERS)
+    setCopied(false)
+  }
+
+  const handleCopy = async () => {
+    if (hasErrors) {
+      return
+    }
+
+    await navigator.clipboard.writeText(code)
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 1500)
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 16 }}
+      className="space-y-6"
+    >
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <button
+          onClick={onBack}
+          className="inline-flex w-fit items-center gap-2 rounded-lg border border-dark-700 bg-dark-800 px-3 py-2 text-sm font-semibold text-dark-300 transition-smooth hover:border-dark-600 hover:text-white"
+        >
+          <ArrowLeft size={16} />
+          Library
+        </button>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold uppercase tracking-wide ${
+              hasErrors
+                ? 'border-red-500/40 bg-red-500/10 text-red-300'
+                : 'border-dark-700 bg-dark-800 text-dark-300'
+            }`}
+          >
+            {hasErrors ? <AlertCircle size={14} /> : <Check size={14} />}
+            {hasErrors ? `${errorCount} error${errorCount === 1 ? '' : 's'}` : 'Ready'}
+          </span>
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onToggleFavorite(card.id)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-dark-700 bg-dark-800 text-dark-400 transition-colors hover:border-accent-500/60 hover:text-accent-500"
+            aria-label={card.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Heart size={18} fill={card.isFavorite ? 'currentColor' : 'none'} stroke="currentColor" />
+          </motion.button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
+        <section className="overflow-hidden rounded-lg border border-dark-700 bg-dark-800/50">
+          <div className="border-b border-dark-700 p-5 sm:p-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <h2 className="text-2xl font-bold leading-tight text-white">{card.title}</h2>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <span className="rounded border border-dark-600 bg-dark-700 px-3 py-1 text-xs font-semibold text-dark-300">
+                    {card.motionBehavior}
+                  </span>
+                  <span className="rounded border border-dark-600 bg-dark-700 px-3 py-1 text-xs font-semibold text-dark-300">
+                    {card.interactionPattern}
+                  </span>
+                  <span className="rounded border border-dark-600 bg-dark-700 px-3 py-1 text-xs font-semibold text-dark-300">
+                    {card.visualCharacter}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-left sm:grid-cols-4 lg:grid-cols-2">
+                <div className="rounded-lg border border-dark-700 bg-dark-900 px-3 py-2">
+                  <div className="text-xs font-medium uppercase tracking-wide text-dark-400">Duration</div>
+                  <div className="mt-1 text-sm font-semibold text-white">{parameters.duration}s</div>
+                </div>
+                <div className="rounded-lg border border-dark-700 bg-dark-900 px-3 py-2">
+                  <div className="text-xs font-medium uppercase tracking-wide text-dark-400">Type</div>
+                  <div className="mt-1 text-sm font-semibold text-white">{card.category}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-dark-900 p-4 sm:p-6">
+            <div className="overflow-hidden rounded-lg border border-dark-700 bg-black/40">
+              <AnimationPreview type={card.motionBehavior} parameters={parameters} large />
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-dark-700 bg-dark-800/50 p-5 sm:p-6">
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <h3 className="inline-flex items-center gap-2 text-lg font-semibold text-white">
+              <SlidersHorizontal size={18} />
+              Parameters
+            </h3>
+            <button
+              onClick={resetParameters}
+              className="inline-flex items-center gap-2 rounded-lg border border-dark-700 px-3 py-2 text-sm font-semibold text-dark-300 transition-smooth hover:border-dark-600 hover:text-white"
+            >
+              <RotateCcw size={15} />
+              Reset
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {visibleParameterIds.map((id) => {
+              const field = parameterFields[id]
+
+              return (
+                <ParameterInput
+                  key={id}
+                  id={id}
+                  label={field.label}
+                  unit={field.unit}
+                  value={parameters[id]}
+                  error={validation.errors[id]}
+                  min={field.min}
+                  max={field.max}
+                  step={field.step}
+                  onChange={updateParameter}
+                />
+              )
+            })}
+          </div>
+        </section>
+      </div>
+
+      <section className="overflow-hidden rounded-lg border border-dark-700 bg-dark-800/50">
+        <div className="flex flex-col gap-4 border-b border-dark-700 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div>
+            <h3 className="text-lg font-semibold text-white">Copy Code</h3>
+            <p className="mt-1 text-sm text-dark-400">{card.motionBehavior}Animation.tsx</p>
+          </div>
+          <button
+            onClick={handleCopy}
+            disabled={hasErrors}
+            className="inline-flex w-fit items-center gap-2 rounded-lg border border-dark-700 bg-dark-900 px-3 py-2 text-sm font-semibold text-dark-300 transition-smooth hover:border-accent-500/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {copied ? <Check size={16} /> : <Copy size={16} />}
+            {copied ? 'Copied' : 'Copy'}
+          </button>
+        </div>
+
+        {hasErrors && (
+          <div className="mx-5 mt-5 flex items-center gap-2 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-300 sm:mx-6">
+            <AlertCircle size={16} />
+            Fix the highlighted fields before copying this animation.
+          </div>
+        )}
+
+        <pre className="max-h-[460px] overflow-x-auto bg-dark-900 p-5 text-sm leading-relaxed text-dark-300 sm:p-6">
+          <code>{code}</code>
+        </pre>
+      </section>
     </motion.div>
   )
 }
@@ -329,13 +739,14 @@ function Sidebar({
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={onFavoritesToggle}
-        className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${
+        className={`flex w-full items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${
           onlyFavorites
             ? 'bg-accent-500 text-white'
             : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
         }`}
       >
-        ♥ Favorites
+        <Heart size={16} fill={onlyFavorites ? 'currentColor' : 'none'} />
+        Favorites
       </motion.button>
 
       {/* Filter Sections */}
@@ -381,6 +792,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('')
   const [activeCategory, setActiveCategory] = useState<Category>('All')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [selectedAnimationId, setSelectedAnimationId] = useState<string | null>(null)
 
   // Filtered animations
   const filteredAnimations = useMemo(() => {
@@ -426,6 +838,9 @@ export default function Home() {
     searchTerm,
     activeCategory,
   ])
+  const selectedAnimation = useMemo(() => {
+    return animations.find((anim) => anim.id === selectedAnimationId) ?? null
+  }, [animations, selectedAnimationId])
 
   const toggleFavorite = (id: string) => {
     setAnimations((prevAnimations) =>
@@ -491,7 +906,7 @@ export default function Home() {
                     style={{
                       fontFamily: 'PP Neue Montreal',
                       padding: '6px 25px',
-                      ...(activeCategory === tab ? { backgroundColor: '#1847BD', color: 'white' } : { color: '#white' })
+                      ...(activeCategory === tab ? { backgroundColor: '#1847BD', color: 'white' } : { color: '#666' })
                     }}
                   >
                     {tab}
@@ -622,30 +1037,46 @@ export default function Home() {
             )}
           </AnimatePresence>
 
-          {/* Animation Cards Grid */}
+          {/* Animation Cards Grid / Detail View */}
           <section className="md:col-span-3">
-            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence mode="popLayout">
-                {filteredAnimations.length > 0 ? (
-                  filteredAnimations.map((anim) => (
-                    <AnimationCardComponent
-                      key={anim.id}
-                      card={anim}
-                      isFavorite={anim.isFavorite}
-                      onToggleFavorite={toggleFavorite}
-                    />
-                  ))
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="col-span-full text-center py-12"
-                  >
-                    <p className="text-dark-400">No animations found. Try adjusting your filters.</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
+            <AnimatePresence mode="wait">
+              {selectedAnimation ? (
+                <AnimationDetail
+                  key={selectedAnimation.id}
+                  card={selectedAnimation}
+                  onBack={() => setSelectedAnimationId(null)}
+                  onToggleFavorite={toggleFavorite}
+                />
+              ) : (
+                <motion.div
+                  key="library-grid"
+                  layout
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
+                  <AnimatePresence mode="popLayout">
+                    {filteredAnimations.length > 0 ? (
+                      filteredAnimations.map((anim) => (
+                        <AnimationCardComponent
+                          key={anim.id}
+                          card={anim}
+                          isFavorite={anim.isFavorite}
+                          onToggleFavorite={toggleFavorite}
+                          onSelect={setSelectedAnimationId}
+                        />
+                      ))
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="col-span-full text-center py-12"
+                      >
+                        <p className="text-dark-400">No animations found. Try adjusting your filters.</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         </div>
       </main>
@@ -653,7 +1084,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-dark-800 mt-16 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-dark-500 text-sm">
-          <p>© 2024 OWOW Atlas. Professional animation library for creative professionals.</p>
+          <p>&copy; 2024 OWOW Atlas. Professional animation library for creative professionals.</p>
         </div>
       </footer>
     </div>
