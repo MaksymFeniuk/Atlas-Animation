@@ -329,11 +329,10 @@ function Sidebar({
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={onFavoritesToggle}
-        className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${
-          onlyFavorites
+        className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${onlyFavorites
             ? 'bg-accent-500 text-white'
             : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
-        }`}
+          }`}
       >
         ♥ Favorites
       </motion.button>
@@ -471,9 +470,13 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-2xl font-bold bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent"
+              className="flex items-center gap-4 mr-10"
             >
-              OWOW Atlas
+              <img
+                src="/logo.svg"
+                alt="OWOW Atlas logo"
+                className="h-9 w-auto"
+              />
             </motion.div>
 
             {/* Desktop Navigation & Search */}
@@ -484,11 +487,10 @@ export default function Home() {
                   <button
                     key={tab}
                     onClick={() => setActiveCategory(tab)}
-                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-smooth ${
-                      activeCategory === tab
+                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-smooth ${activeCategory === tab
                         ? 'bg-accent-500 text-white'
                         : 'text-dark-400 hover:text-white'
-                    }`}
+                      }`}
                   >
                     {tab}
                   </button>
@@ -537,11 +539,10 @@ export default function Home() {
                         setActiveCategory(tab)
                         setMobileMenuOpen(false)
                       }}
-                      className={`px-3 py-1.5 rounded-lg font-medium text-sm transition-smooth ${
-                        activeCategory === tab
+                      className={`px-3 py-1.5 rounded-lg font-medium text-sm transition-smooth ${activeCategory === tab
                           ? 'bg-accent-500 text-white'
                           : 'text-dark-400 hover:text-white'
-                      }`}
+                        }`}
                     >
                       {tab}
                     </button>
