@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertCircle, ArrowLeft, Check, Copy, Heart, Menu, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react'
 
@@ -189,6 +189,13 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
   },
 ]
 
+
+function saveFavourites(animations: AnimationCard[]) {
+  const favourites = animations.filter((anim) => anim.isFavorite === true);
+  const favouritesString = JSON.stringify(favourites);
+  localStorage.setItem("favouriteAnimationSaved", favouritesString);
+}
+
 function validateParameters(params: AnimationParameters): ValidatedParameters {
   const specs: Record<keyof AnimationParameters, { min: number; max: number; label: string }> = {
     duration: { min: 0.1, max: 10, label: 'Duration' },
@@ -230,31 +237,6 @@ function validateParameters(params: AnimationParameters): ValidatedParameters {
 
   return { values, errors }
 }
-
-//save favourites to local storage
-function saveFavourites() {
-  let favouriteArray = []
-  for (let arrayCount = 0; arrayCount < SAMPLE_ANIMATIONS.length; arrayCount++) {
-    let favouriteObj = {
-      id: "",
-      bool: false,
-    }
-
-    if (SAMPLE_ANIMATIONS[arrayCount].isFavorite == true) {
-       favouriteObj.id = SAMPLE_ANIMATIONS[arrayCount].id;
-       favouriteObj.bool = SAMPLE_ANIMATIONS[arrayCount].isFavorite;
-       favouriteArray.push(favouriteObj);
-    }
-
-    else {
-      console.log("id " + SAMPLE_ANIMATIONS[arrayCount].id + " is not favourite")
-    }
-    let favouriteArrayJSONIFYD = JSON.stringify(favouriteArray);
-    localStorage.setItem("favouriteAnimationSaved", favouriteArrayJSONIFYD);
-
-  }
-
-};
 
 // Animation Preview Component
 function AnimationPreview({
@@ -356,7 +338,6 @@ function AnimationCardComponent({
             onClick={(event) => {
               event.stopPropagation()
               onToggleFavorite(card.id)
-              saveFavourites();
 
             }}
             className="mt-0.5 flex-shrink-0 text-dark-400 hover:text-accent-500 transition-colors"
@@ -822,7 +803,19 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState<Category>('All')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedAnimationId, setSelectedAnimationId] = useState<string | null>(null)
-
+  // Load favorites from localStorage on initial render
+  useEffect(() => {
+    const savedFavouritesString = localStorage.getItem("favouriteAnimationSaved");
+    if (savedFavouritesString) {
+      const savedFavourites: AnimationCard[] = JSON.parse(savedFavouritesString);
+      setAnimations((prevAnimations) =>
+        prevAnimations.map((anim) => ({
+          ...anim,
+          isFavorite: savedFavourites.some((savedAnim) => savedAnim.id === anim.id),
+        }))
+      );
+    }
+  }, []);
   // Filtered animations
   const filteredAnimations = useMemo(() => {
     return animations.filter((anim) => {
@@ -870,14 +863,15 @@ export default function Home() {
   const selectedAnimation = useMemo(() => {
     return animations.find((anim) => anim.id === selectedAnimationId) ?? null
   }, [animations, selectedAnimationId])
-
-  const toggleFavorite = (id: string) => {
-    setAnimations((prevAnimations) =>
-      prevAnimations.map((anim) =>
-        anim.id === id ? { ...anim, isFavorite: !anim.isFavorite } : anim
-      )
-    )
-  }
+const toggleFavorite = (id: string) => {
+  setAnimations((prevAnimations) => {
+    const updated = prevAnimations.map((anim) =>
+      anim.id === id ? { ...anim, isFavorite: !anim.isFavorite } : anim
+    );
+    saveFavourites(updated);
+    return updated;
+  });
+};
 
   const handleMotionToggle = (option: string) => {
     setSelectedMotion((prev) =>
