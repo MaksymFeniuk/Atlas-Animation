@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Menu, X, Heart } from 'lucide-react'
+import { Search, Menu, X, Heart, Copy, Check } from 'lucide-react'
 
 // Types
 type MotionBehavior = 'Fade' | 'Slide' | 'Scale' | 'Morph' | 'Rotate'
@@ -159,6 +159,386 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
   },
 ]
 
+// Animation documentation and code
+const ANIMATION_DETAILS: Record<string, { code: string; documentation: string; defaultSpeed: number; defaultSize: number }> = {
+  '1': {
+    code: `<motion.button
+  initial={{ opacity: 1 }}
+  whileHover={{ opacity: 0.3 }}
+  transition={{ duration: 0.3 }}
+>
+  Hover Me
+</motion.button>`,
+    documentation: 'A smooth fade effect on hover. Perfect for button interactions and UI feedback.',
+    defaultSpeed: 0.3,
+    defaultSize: 48,
+  },
+  '2': {
+    code: `<motion.div
+  initial={{ x: -300 }}
+  animate={{ x: 0 }}
+  transition={{ duration: 0.5 }}
+>
+  Sliding Menu
+</motion.div>`,
+    documentation: 'Slides in from the left. Ideal for menu and sidebar animations.',
+    defaultSpeed: 0.5,
+    defaultSize: 64,
+  },
+  '3': {
+    code: `<motion.button
+  whileHover={{ scale: 1.2 }}
+  whileTap={{ scale: 0.95 }}
+  transition={{ duration: 0.2 }}
+>
+  Icon
+</motion.button>`,
+    documentation: 'Scales up on hover, great for interactive icons and call-to-action buttons.',
+    defaultSpeed: 0.2,
+    defaultSize: 40,
+  },
+  '4': {
+    code: `<motion.div
+  initial={{ borderRadius: '50%' }}
+  whileHover={{ borderRadius: '0%' }}
+  transition={{ duration: 0.5 }}
+  className="w-20 h-20 bg-gradient-to-br from-accent-500 to-accent-600"
+/>`,
+    documentation: 'Morphs between circle and square. Creates organic shape transitions.',
+    defaultSpeed: 0.5,
+    defaultSize: 80,
+  },
+  '5': {
+    code: `<motion.div
+  animate={{ rotate: 360 }}
+  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+  className="w-8 h-8 border-2 border-accent-500 rounded-full border-t-transparent"
+/>`,
+    documentation: 'Continuous rotation. Perfect for loading spinners and circular progress.',
+    defaultSpeed: 2,
+    defaultSize: 32,
+  },
+  '6': {
+    code: `<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4 }}
+>
+  Card Content
+</motion.div>`,
+    documentation: 'Fades in while sliding up. Elegant entrance for cards and content blocks.',
+    defaultSpeed: 0.4,
+    defaultSize: 100,
+  },
+  '7': {
+    code: `<motion.div
+  initial={{ scale: 0 }}
+  animate={{ scale: 1 }}
+  transition={{ duration: 0.3, type: 'spring' }}
+>
+  Modal Content
+</motion.div>`,
+    documentation: 'Pops in with a spring effect. Great for modals and popup animations.',
+    defaultSpeed: 0.3,
+    defaultSize: 120,
+  },
+  '8': {
+    code: `<motion.div
+  initial={{ x: 0 }}
+  whileHover={{ x: 10 }}
+  transition={{ duration: 0.3 }}
+>
+  Navigation Item
+</motion.div>`,
+    documentation: 'Slides horizontally on interaction. Perfect for navigation menus.',
+    defaultSpeed: 0.3,
+    defaultSize: 60,
+  },
+  '9': {
+    code: `<motion.svg
+  initial={{ d: 'path1' }}
+  animate={{ d: 'path2' }}
+  transition={{ duration: 1 }}
+/>`,
+    documentation: 'Abstract SVG morphing animation. Ideal for creative, artistic transitions.',
+    defaultSpeed: 1,
+    defaultSize: 100,
+  },
+  '10': {
+    code: `<motion.div
+  animate={{ rotate: 360 }}
+  transition={{ duration: 1.5, repeat: Infinity }}
+  className="w-6 h-6 rounded-full bg-accent-500"
+/>`,
+    documentation: 'Rotates badges and indicators. Works well for notification badges.',
+    defaultSpeed: 1.5,
+    defaultSize: 24,
+  },
+  '11': {
+    code: `<motion.div
+  initial={{ opacity: 1 }}
+  animate={{ opacity: 0 }}
+  transition={{ duration: 0.5 }}
+  className="fixed inset-0 bg-black"
+/>`,
+    documentation: 'Fades out a backdrop or overlay. Perfect for closing animations.',
+    defaultSpeed: 0.5,
+    defaultSize: 100,
+  },
+  '12': {
+    code: `<motion.div
+  initial={{ x: 0 }}
+  exit={{ x: 300, opacity: 0 }}
+  transition={{ duration: 0.3 }}
+>
+  List Item
+</motion.div>`,
+    documentation: 'Slides out to the right when removed. Great for swipe delete animations.',
+    defaultSpeed: 0.3,
+    defaultSize: 80,
+  },
+  '13': {
+    code: `<motion.span
+  initial={{ scale: 1 }}
+  whileInView={{ scale: 1.1 }}
+  transition={{ duration: 0.4 }}
+>
+  Emphasized Text
+</motion.span>`,
+    documentation: 'Scales text for emphasis. Perfect for highlighting important information.',
+    defaultSpeed: 0.4,
+    defaultSize: 48,
+  },
+  '14': {
+    code: `<motion.div
+  animate={{
+    borderRadius: ['50%', '30%', '70%', '50%']
+  }}
+  transition={{ duration: 3, repeat: Infinity }}
+  className="w-32 h-32 bg-gradient-to-br from-accent-500 to-accent-600"
+/>`,
+    documentation: 'Organic blob animation. Creates fluid, natural-looking shape transitions.',
+    defaultSpeed: 3,
+    defaultSize: 128,
+  },
+  '15': {
+    code: `<motion.svg
+  animate={{ rotate: 360 }}
+  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+>
+  <circle cx="50" cy="50" r="45" />
+</motion.svg>`,
+    documentation: 'Rotates geometric patterns. Great for decorative and interactive elements.',
+    defaultSpeed: 2,
+    defaultSize: 100,
+  },
+}
+
+// Animation Detail Modal Component
+function AnimationDetailModal({
+  animation,
+  isOpen,
+  onClose,
+}: {
+  animation: AnimationCard | null
+  isOpen: boolean
+  onClose: () => void
+}) {
+  const [speed, setSpeed] = useState(1)
+  const [scale, setScale] = useState(1)
+  const [copied, setCopied] = useState(false)
+
+  const details = animation ? ANIMATION_DETAILS[animation.id] : null
+
+  if (!animation || !details) return null
+
+  const copyCode = () => {
+    navigator.clipboard.writeText(details.code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const actualSpeed = details.defaultSpeed / speed
+  const actualSize = details.defaultSize * scale
+
+  const previewVariants = {
+    Fade: {
+      initial: { opacity: 1 },
+      animate: { opacity: 0.3 },
+      transition: { duration: actualSpeed * 1.5, repeat: Infinity, repeatType: 'reverse' as const },
+    },
+    Slide: {
+      initial: { x: -20 * scale },
+      animate: { x: 20 * scale },
+      transition: { duration: actualSpeed * 1.5, repeat: Infinity, repeatType: 'reverse' as const },
+    },
+    Scale: {
+      initial: { scale: 1 },
+      animate: { scale: 1.2 },
+      transition: { duration: actualSpeed * 1.5, repeat: Infinity, repeatType: 'reverse' as const },
+    },
+    Morph: {
+      initial: { borderRadius: '50%' },
+      animate: { borderRadius: '0%' },
+      transition: { duration: actualSpeed * 1.5, repeat: Infinity, repeatType: 'reverse' as const },
+    },
+    Rotate: {
+      initial: { rotate: 0 },
+      animate: { rotate: 360 },
+      transition: { duration: actualSpeed * 2, repeat: Infinity, ease: 'linear' as const },
+    },
+  }
+
+  const config = previewVariants[animation.motionBehavior]
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+          />
+
+          {/* Side Panel Modal */}
+          <motion.div
+            initial={{ opacity: 0, x: 400 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 400 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="fixed top-0 right-0 h-screen w-full md:w-[600px] lg:w-[700px] xl:w-[800px] bg-dark-900 border-l border-dark-700 z-50 flex flex-col overflow-hidden"
+          >
+            {/* Header */}
+            <div className="flex-shrink-0 border-b border-dark-700 px-6 py-4 flex items-center justify-between bg-dark-900/95 backdrop-blur-sm">
+              <h2 className="text-2xl font-bold text-white truncate">{animation.title}</h2>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onClose}
+                className="flex-shrink-0 p-2 hover:bg-dark-800 rounded-lg transition-smooth ml-4"
+              >
+                <X size={24} />
+              </motion.button>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-hidden flex">
+              {/* Left Column - Preview */}
+              <div className="flex-shrink-0 w-1/2 border-r border-dark-700 p-6 flex flex-col items-center justify-center bg-dark-800/50">
+                <h3 className="text-lg font-semibold text-white mb-4 w-full">Preview</h3>
+                <div className="w-full h-full bg-dark-800 rounded-lg border border-dark-700 overflow-hidden p-8 flex items-center justify-center">
+                  <motion.div
+                    key={`${speed}-${scale}`}
+                    initial={config.initial}
+                    animate={config.animate}
+                    transition={config.transition}
+                    className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
+                    style={{ width: actualSize, height: actualSize }}
+                  />
+                </div>
+              </div>
+
+              {/* Right Column - Settings, Code, Documentation */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {/* Settings Sliders */}
+                <div className="space-y-6 bg-dark-800/50 p-4 rounded-lg border border-dark-700">
+                  <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Settings</h3>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-sm font-semibold text-white">Speed</label>
+                      <span className="text-xs text-dark-400">{speed.toFixed(1)}x</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="2"
+                      step="0.1"
+                      value={speed}
+                      onChange={(e) => setSpeed(parseFloat(e.target.value))}
+                      className="w-full accent-accent-500 cursor-pointer"
+                    />
+                    <div className="flex justify-between text-xs text-dark-500 mt-1">
+                      <span>Slow</span>
+                      <span>Fast</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-sm font-semibold text-white">Size</label>
+                      <span className="text-xs text-dark-400">{Math.round(actualSize)}px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="2"
+                      step="0.1"
+                      value={scale}
+                      onChange={(e) => setScale(parseFloat(e.target.value))}
+                      className="w-full accent-accent-500 cursor-pointer"
+                    />
+                    <div className="flex justify-between text-xs text-dark-500 mt-1">
+                      <span>Small</span>
+                      <span>Large</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Code Section */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Code</h3>
+                  <div className="relative">
+                    <pre className="bg-dark-800 border border-dark-700 rounded-lg p-3 text-xs text-green-400 overflow-x-auto font-mono max-h-40">
+                      {details.code}
+                    </pre>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={copyCode}
+                      className="absolute top-2 right-2 px-2 py-1 bg-accent-500 hover:bg-accent-600 text-white text-xs font-semibold rounded flex items-center gap-1 transition-smooth"
+                    >
+                      {copied ? (
+                        <>
+                          <Check size={14} /> Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={14} /> Copy
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                </div>
+
+                {/* Documentation */}
+                <div className="space-y-3 pb-6">
+                  <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Documentation</h3>
+                  <p className="text-dark-300 text-xs leading-relaxed">{details.documentation}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-2 py-1 text-xs font-medium bg-accent-500/20 text-accent-400 rounded border border-accent-500/30">
+                      {animation.motionBehavior}
+                    </span>
+                    <span className="px-2 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
+                      {animation.interactionPattern}
+                    </span>
+                    <span className="px-2 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
+                      {animation.visualCharacter}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  )
+}
+
 // Animation Preview Component
 function AnimationPreview({ type }: { type: MotionBehavior }) {
   const previewVariants = {
@@ -208,10 +588,12 @@ function AnimationCardComponent({
   card,
   isFavorite,
   onToggleFavorite,
+  onCardClick,
 }: {
   card: AnimationCard
   isFavorite: boolean
   onToggleFavorite: (id: string) => void
+  onCardClick: (animation: AnimationCard) => void
 }) {
   return (
     <motion.div
@@ -220,11 +602,12 @@ function AnimationCardComponent({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
-      className="card-hover group"
+      onClick={() => onCardClick(card)}
+      className="card-hover group cursor-pointer"
     >
       <div className="p-4 space-y-4">
         {/* Preview Area */}
-        <div className="w-full bg-dark-900 rounded-lg border border-dark-700 overflow-hidden">
+        <div className="w-full bg-dark-900 rounded-lg border border-dark-700 overflow-hidden hover:border-accent-500/50 transition-smooth">
           <AnimationPreview type={card.motionBehavior} />
         </div>
 
@@ -234,7 +617,10 @@ function AnimationCardComponent({
           <motion.button
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onToggleFavorite(card.id)}
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleFavorite(card.id)
+            }}
             className="mt-0.5 flex-shrink-0 text-dark-400 hover:text-accent-500 transition-colors"
           >
             <Heart
@@ -381,6 +767,8 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('')
   const [activeCategory, setActiveCategory] = useState<Category>('All')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [selectedAnimation, setSelectedAnimation] = useState<AnimationCard | null>(null)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
   // Filtered animations
   const filteredAnimations = useMemo(() => {
@@ -459,6 +847,16 @@ export default function Home() {
     setSelectedVisual([])
     setOnlyFavorites(false)
     setSearchTerm('')
+  }
+
+  const handleOpenDetailModal = (animation: AnimationCard) => {
+    setSelectedAnimation(animation)
+    setIsDetailModalOpen(true)
+  }
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false)
+    setTimeout(() => setSelectedAnimation(null), 300)
   }
 
   return (
@@ -633,6 +1031,7 @@ export default function Home() {
                       card={anim}
                       isFavorite={anim.isFavorite}
                       onToggleFavorite={toggleFavorite}
+                      onCardClick={handleOpenDetailModal}
                     />
                   ))
                 ) : (
@@ -649,6 +1048,13 @@ export default function Home() {
           </section>
         </div>
       </main>
+
+      {/* Animation Detail Modal */}
+      <AnimationDetailModal
+        animation={selectedAnimation}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
+      />
 
       {/* Footer */}
       <footer className="border-t border-dark-800 mt-16 py-8">
