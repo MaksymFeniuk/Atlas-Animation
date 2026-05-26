@@ -20,15 +20,16 @@ const config: Config = {
           300: '#8a8a8a',
         },
         accent: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          500: '#8b5cf6',
-          600: '#7c3aed',
+          50: '#eaf6ff',
+          100: '#d6edff',
+          500: '#0988EF',
+          600: '#0876CF',
         },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-conic':
+          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       backdropBlur: {
         xs: '2px',

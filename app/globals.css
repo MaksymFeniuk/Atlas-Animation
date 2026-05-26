@@ -25,7 +25,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-dark-600 rounded-lg hover:bg-dark-500;
+  @apply bg-dark-600 rounded-lg;
 }
 
 ::-webkit-scrollbar-thumb:hover {
