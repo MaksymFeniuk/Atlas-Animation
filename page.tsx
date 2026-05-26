@@ -233,9 +233,27 @@ function validateParameters(params: AnimationParameters): ValidatedParameters {
 
 //save favourites to local storage
 function saveFavourites() {
-  let favouriteAnimations = SAMPLE_ANIMATIONS.filter(anim => anim.isFavorite === true);
-  let favouriteAnimationsJSON = JSON.stringify(favouriteAnimations);
-  localStorage.setItem("favouriteAnimationSaved", favouriteAnimationsJSON);
+  let favouriteArray = []
+  for (let arrayCount = 0; arrayCount < SAMPLE_ANIMATIONS.length; arrayCount++) {
+    let favouriteObj = {
+      id: "",
+      bool: false,
+    }
+
+    if (SAMPLE_ANIMATIONS[arrayCount].isFavorite == true) {
+       favouriteObj.id = SAMPLE_ANIMATIONS[arrayCount].id;
+       favouriteObj.bool = SAMPLE_ANIMATIONS[arrayCount].isFavorite;
+       favouriteArray.push(favouriteObj);
+    }
+
+    else {
+      console.log("id " + SAMPLE_ANIMATIONS[arrayCount].id + " is not favourite")
+    }
+    let favouriteArrayJSONIFYD = JSON.stringify(favouriteArray);
+    localStorage.setItem("favouriteAnimationSaved", favouriteArrayJSONIFYD);
+
+  }
+
 };
 
 // Animation Preview Component
