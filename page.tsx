@@ -768,6 +768,55 @@ export default function Home() {
   const [selectedAnimation, setSelectedAnimation] = useState<AnimationCard | null>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [scrambledTab, setScrambledTab] = useState<Category | null>(null)
+  const [revealProgress, setRevealProgress] = useState(0)
+  const [preScrambledText, setPreScrambledText] = useState('')
+
+  // Helper function to generate scrambled text once
+  const generateScrambledText = (text: string): string => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    return text
+      .split('')
+      .map((char) => (char === ' ' ? ' ' : chars[Math.floor(Math.random() * chars.length)]))
+      .join('')
+  }
+
+  // Helper function to reveal scrambled text from left to right
+  const revealScrambledText = (original: string, scrambled: string, reveal: number): string => {
+    const revealLength = Math.ceil(original.length * reveal)
+    
+    return scrambled
+      .split('')
+      .map((char, index) => {
+        if (index < revealLength) {
+          return original[index]
+        }
+        return char
+      })
+      .join('')
+  }
+
+  // Handle tab hover with scramble effect
+  const handleTabHover = (tab: Category) => {
+    const scrambled = generateScrambledText(tab)
+    setPreScrambledText(scrambled)
+    setScrambledTab(tab)
+    setRevealProgress(0)
+    const duration = 200 // 0.4 seconds in milliseconds
+    const startTime = Date.now()
+    
+    const animationInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      setRevealProgress(progress)
+      
+      if (progress >= 1) {
+        clearInterval(animationInterval)
+        setScrambledTab(null)
+        setRevealProgress(0)
+      }
+    }, 30) // Update every 30ms for smooth animation
+  }
 
   // Load favorites from localStorage on initial render
   useEffect(() => {
@@ -884,7 +933,9 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex flex-col items-center"
+              whileHover={{ scale: 1.05 }}
+              onClick={() => setActiveCategory('All')}
+              className="flex flex-col items-center cursor-pointer"
             >
               <img src="/atlas-logo.png" alt="Atlas Logo" style={{ height: '30px', width: 'auto', marginTop: '5px' }} />
             </motion.div>
@@ -897,14 +948,15 @@ export default function Home() {
                   <button
                     key={tab}
                     onClick={() => setActiveCategory(tab)}
-                    className="px-4 rounded-lg font-medium text-sm text-white transition-smooth uppercase flex items-center justify-center"
+                    onMouseEnter={() => handleTabHover(tab)}
+                    className="px-4 rounded-lg font-normal tracking-widest text-sm text-white transition-smooth uppercase flex items-center justify-center"
                     style={{
                       fontFamily: 'PP Neue Montreal',
                       padding: '6px 25px',
                       ...(activeCategory === tab ? { backgroundColor: '#ffffff', color: 'black' } : { color: 'white' })
                     }}
                   >
-                    {tab}
+                    {scrambledTab === tab ? revealScrambledText(tab, preScrambledText, revealProgress) : tab}
                   </button>
                 ))}
               </div>
