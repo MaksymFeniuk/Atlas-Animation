@@ -915,7 +915,9 @@ function AnimationPreview({ type, isText }: { type: MotionBehavior; isText?: boo
       ? 'w-10 h-10 bg-cyan-400 rounded-full'
       : type === 'Rainbow'
         ? 'w-14 h-14 border-4 rounded-lg bg-transparent'
-        : 'w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg'
+        : type === 'Rotate'
+          ? 'w-8 h-8 border-2 border-accent-500 border-t-transparent rounded-full bg-transparent'
+          : 'w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg'
 
   return (
     <div className="flex items-center justify-center w-full h-32">
