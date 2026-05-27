@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Menu, X, Heart, Copy, Check } from 'lucide-react'
 
@@ -158,6 +158,12 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
     isFavorite: false,
   },
 ]
+
+function saveFavourites(animations: AnimationCard[]) {
+  const favourites = animations.filter((anim) => anim.isFavorite === true);
+  const favouritesString = JSON.stringify(favourites);
+  localStorage.setItem("favouriteAnimationSaved", favouritesString);
+}
 
 // Animation documentation and code
 const ANIMATION_DETAILS: Record<string, { code: string; documentation: string; defaultSpeed: number; defaultSize: number }> = {
@@ -763,6 +769,21 @@ export default function Home() {
   const [selectedAnimation, setSelectedAnimation] = useState<AnimationCard | null>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
+    // Load favorites from localStorage on initial render
+  useEffect(() => {
+    const savedFavouritesString = localStorage.getItem("favouriteAnimationSaved");
+    if (savedFavouritesString) {
+      const savedFavourites: AnimationCard[] = JSON.parse(savedFavouritesString);
+      setAnimations((prevAnimations) =>
+        prevAnimations.map((anim) => ({
+          ...anim,
+          isFavorite: savedFavourites.some((savedAnim) => savedAnim.id === anim.id),
+        }))
+      );
+    }
+  }, []);
+
+
   // Filtered animations
   const filteredAnimations = useMemo(() => {
     return animations.filter((anim) => {
@@ -808,14 +829,15 @@ export default function Home() {
     activeCategory,
   ])
 
-  const toggleFavorite = (id: string) => {
-    setAnimations((prevAnimations) =>
-      prevAnimations.map((anim) =>
-        anim.id === id ? { ...anim, isFavorite: !anim.isFavorite } : anim
-      )
-    )
-  }
-
+const toggleFavorite = (id: string) => {
+  setAnimations((prevAnimations) => {
+    const updated = prevAnimations.map((anim) =>
+      anim.id === id ? { ...anim, isFavorite: !anim.isFavorite } : anim
+    );
+    saveFavourites(updated);
+    return updated;
+  });
+};
   const handleMotionToggle = (option: string) => {
     setSelectedMotion((prev) =>
       prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option]
