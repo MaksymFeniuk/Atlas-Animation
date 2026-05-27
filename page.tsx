@@ -782,71 +782,15 @@ function AnimationDetailModal({
 }
 
 // Animation Preview Component
-function AnimationPreview({ type, isText, isHovering = false }: { type: MotionBehavior; isText?: boolean; isHovering?: boolean }) {
+function AnimationPreview({ type, isText }: { type: MotionBehavior; isText?: boolean }) {
+  const previewStateKey = `${type}-active`
+
   // Text animation variants
   if (isText) {
     if (type === 'Typing') {
-      // Actual typing effect with individual letters
-      const text = 'Text'
-
-      const [cycle, setCycle] = useState(0)
-      useEffect(() => {
-        if (!isHovering) {
-          setCycle(0)
-          return
-        }
-
-        const perLetter = 0.3
-        const stagger = 0.08
-        const delayChildren = 0.1
-        const pause = 0.5
-        const total = delayChildren + perLetter + stagger * (text.length - 1) + pause
-        const id = setInterval(() => setCycle((c) => c + 1), total * 1000)
-        return () => clearInterval(id)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [isHovering])
-
       return (
         <div className="flex items-center justify-center w-full h-32">
-          {isHovering ? (
-            <motion.div
-              key={`typing-${cycle}`}
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: {},
-                visible: {
-                  transition: {
-                    staggerChildren: 0.08,
-                    delayChildren: 0.1,
-                  },
-                },
-              }}
-              className="flex items-center justify-center"
-            >
-              {text.split('').map((char, i) => (
-                <motion.span
-                  key={i}
-                  variants={{
-                    hidden: { opacity: 0, y: 10 },
-                    visible: {
-                      opacity: 1,
-                      y: -8,
-                      transition: { duration: 0.3 },
-                    },
-                  }}
-                  className="font-bold text-white"
-                  style={{ fontSize: '20px' }}
-                >
-                  {char}
-                </motion.span>
-              ))}
-            </motion.div>
-          ) : (
-            <span className="font-bold text-dark-300" style={{ fontSize: '20px' }}>
-              Text
-            </span>
-          )}
+          <TypingPreview />
         </div>
       )
     }
@@ -890,19 +834,16 @@ function AnimationPreview({ type, isText, isHovering = false }: { type: MotionBe
 
     return (
       <div className="flex items-center justify-center w-full h-32">
-        {!isHovering ? (
-          <span className="font-bold text-white text-dark-400">Text</span>
-        ) : (
-          <motion.div
-            initial={config.initial}
-            animate={config.animate}
-            transition={config.transition}
-            className="font-bold text-white"
-            style={{ fontSize: '20px', perspective: '1000px' }}
-          >
-            Text
-          </motion.div>
-        )}
+        <motion.div
+          key={previewStateKey}
+          initial={config.initial}
+          animate={config.animate}
+          transition={config.transition}
+          className="font-bold text-white"
+          style={{ fontSize: '20px', perspective: '1000px' }}
+        >
+          Text
+        </motion.div>
       </div>
     )
   }
@@ -979,12 +920,64 @@ function AnimationPreview({ type, isText, isHovering = false }: { type: MotionBe
   return (
     <div className="flex items-center justify-center w-full h-32">
       <motion.div
+        key={previewStateKey}
         initial={config.initial}
-        animate={isHovering ? config.animate : config.initial}
-        transition={isHovering ? config.transition : { duration: 0 }}
+        animate={config.animate}
+        transition={config.transition}
         className={shapeClassName}
       />
     </div>
+  )
+}
+
+function TypingPreview() {
+  const text = 'Text'
+  const [cycle, setCycle] = useState(0)
+
+  useEffect(() => {
+    const perLetter = 0.3
+    const stagger = 0.08
+    const delayChildren = 0.1
+    const pause = 0.5
+    const total = delayChildren + perLetter + stagger * (text.length - 1) + pause
+    const id = setInterval(() => setCycle((c) => c + 1), total * 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  return (
+    <motion.div
+      key={`typing-${cycle}`}
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: 0.08,
+            delayChildren: 0.1,
+          },
+        },
+      }}
+      className="flex items-center justify-center"
+    >
+      {text.split('').map((char, i) => (
+        <motion.span
+          key={i}
+          variants={{
+            hidden: { opacity: 0, y: 10 },
+            visible: {
+              opacity: 1,
+              y: -8,
+              transition: { duration: 0.3 },
+            },
+          }}
+          className="font-bold text-white"
+          style={{ fontSize: '20px' }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </motion.div>
   )
 }
 
@@ -1056,7 +1049,7 @@ function AnimationCardComponent({
               : 'border-dark-700'
           }`}
         >
-          <AnimationPreview type={card.motionBehavior} isText={card.isText} isHovering={isPreviewActive} />
+          <AnimationPreview type={card.motionBehavior} isText={card.isText} />
         </div>
 
         {/* Header with Title and Favorite */}
