@@ -525,7 +525,7 @@ function AnimationDetailModal({
                   <h3 className="text-sm font-semibold text-white uppercase tracking-wide">Documentation</h3>
                   <p className="text-dark-300 text-xs leading-relaxed">{details.documentation}</p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 text-xs font-medium bg-accent-500/20 text-accent-400 rounded border border-accent-500/30">
+                    <span className="px-2 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
                       {animation.motionBehavior}
                     </span>
                     <span className="px-2 py-1 text-xs font-medium bg-dark-700 text-dark-300 rounded border border-dark-600">
