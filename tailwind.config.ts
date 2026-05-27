@@ -18,6 +18,7 @@ const config: Config = {
           500: '#4a4a4a',
           400: '#6a6a6a',
           300: '#8a8a8a',
+          200: '#FFFFFF',
         },
         accent: {
           50: '#eaf6ff',
