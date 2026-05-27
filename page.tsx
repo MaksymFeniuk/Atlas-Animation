@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Menu, X, Heart, Copy, Check } from 'lucide-react'
+import { Search, Menu, X, Heart, Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 
 // Types
 type MotionBehavior = 'Fade' | 'Slide' | 'Scale' | 'Morph' | 'Rotate'
@@ -673,11 +673,10 @@ function FilterSection({
         {options.map((option) => (
           <label key={option} className="flex items-center gap-2.5 cursor-pointer group">
             <div
-              className={`flex-shrink-0 w-3 h-3  border-2 transition-all duration-200 flex items-center justify-center ${
-                selectedOptions.includes(option)
-                  ? 'bg-dark-200 border-dark-200'
-                  : 'border-dark-500 bg-transparent'
-              }`}
+              className={`flex-shrink-0 w-3 h-3  border-2 transition-all duration-200 flex items-center justify-center ${selectedOptions.includes(option)
+                ? 'bg-dark-200 border-dark-200'
+                : 'border-dark-500 bg-transparent'
+                }`}
             >
               {selectedOptions.includes(option) && (
                 <div className="w-1.5 h-1.5 "></div>
@@ -768,8 +767,9 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedAnimation, setSelectedAnimation] = useState<AnimationCard | null>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
-    // Load favorites from localStorage on initial render
+  // Load favorites from localStorage on initial render
   useEffect(() => {
     const savedFavouritesString = localStorage.getItem("favouriteAnimationSaved");
     if (savedFavouritesString) {
@@ -829,15 +829,15 @@ export default function Home() {
     activeCategory,
   ])
 
-const toggleFavorite = (id: string) => {
-  setAnimations((prevAnimations) => {
-    const updated = prevAnimations.map((anim) =>
-      anim.id === id ? { ...anim, isFavorite: !anim.isFavorite } : anim
-    );
-    saveFavourites(updated);
-    return updated;
-  });
-};
+  const toggleFavorite = (id: string) => {
+    setAnimations((prevAnimations) => {
+      const updated = prevAnimations.map((anim) =>
+        anim.id === id ? { ...anim, isFavorite: !anim.isFavorite } : anim
+      );
+      saveFavourites(updated);
+      return updated;
+    });
+  };
   const handleMotionToggle = (option: string) => {
     setSelectedMotion((prev) =>
       prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option]
@@ -984,40 +984,65 @@ const toggleFavorite = (id: string) => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className={`flex transition-all duration-300 ${isSidebarCollapsed ? 'gap-4' : 'gap-8'}`}>
           {/* Desktop Sidebar */}
-          <aside className="hidden md:block">
-            <div className="sticky top-24 bg-dark-800/50 backdrop-blur-xs border border-dark-700 rounded-lg overflow-hidden flex flex-col max-h-[calc(100vh-120px)]">
-              {/* Favorites - Always Visible */}
-              <div className="p-6 flex-shrink-0 border-b border-dark-700">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setOnlyFavorites(!onlyFavorites)}
-                  className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${
-                    onlyFavorites
-                      ? 'bg-accent-500 text-white'
-                      : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
-                  }`}
-                >
-                  ♥ Favorites
-                </motion.button>
-              </div>
+          <motion.aside
+            animate={{ width: isSidebarCollapsed ? 0 : 280 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="hidden md:block shrink-0 relative"
+          >
+            <div className="sticky top-24">
+              {/* Collapse Button */}
+              <button
+                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                aria-label={isSidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+                className="absolute -right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-md border border-dark-700 bg-dark-900 text-dark-300 hover:text-white hover:border-dark-500 transition-smooth"
+              >
+                {isSidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+              </button>
 
-              {/* Scrollable Filters */}
-              <div className="overflow-y-auto flex-1 p-6">
-                <Sidebar
-                  selectedMotion={selectedMotion}
-                  selectedInteraction={selectedInteraction}
-                  selectedVisual={selectedVisual}
-                  onMotionToggle={handleMotionToggle}
-                  onInteractionToggle={handleInteractionToggle}
-                  onVisualToggle={handleVisualToggle}
-                  onDeselectAll={handleDeselectAll}
-                />
-              </div>
+              <AnimatePresence initial={false}>
+                {!isSidebarCollapsed && (
+                  <motion.div
+                    key="sidebar-content"
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -16 }}
+                    transition={{ duration: 0.2 }}
+                    className="bg-dark-800/50 backdrop-blur-xs border border-dark-700 rounded-lg overflow-hidden flex flex-col max-h-[calc(100vh-120px)]"
+                  >
+                    {/* Favorites - Always Visible */}
+                    <div className="p-5 flex-shrink-0 border-b border-dark-700">
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setOnlyFavorites(!onlyFavorites)}
+                        className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${onlyFavorites
+                          ? 'bg-accent-500 text-white'
+                          : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
+                          }`}
+                      >
+                        ♥ Favorites
+                      </motion.button>
+                    </div>
+
+                    {/* Scrollable Filters */}
+                    <div className="overflow-y-auto flex-1 p-6">
+                      <Sidebar
+                        selectedMotion={selectedMotion}
+                        selectedInteraction={selectedInteraction}
+                        selectedVisual={selectedVisual}
+                        onMotionToggle={handleMotionToggle}
+                        onInteractionToggle={handleInteractionToggle}
+                        onVisualToggle={handleVisualToggle}
+                        onDeselectAll={handleDeselectAll}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          </aside>
+          </motion.aside>
 
           {/* Mobile Filter Drawer */}
           <AnimatePresence>
@@ -1033,81 +1058,80 @@ const toggleFavorite = (id: string) => {
                   onClick={(e) => e.stopPropagation()}
                   className="absolute left-0 top-0 bottom-0 w-64 bg-dark-900 border-r border-dark-800 overflow-hidden flex flex-col"
                 >
-                  {/* Favorites - Always Visible */}
-                  <div className="p-6 flex-shrink-0 border-b border-dark-800">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setOnlyFavorites(!onlyFavorites)}
-                      className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth ${
-                        onlyFavorites
-                          ? 'bg-accent-500 text-white'
-                          : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
+                  {/* Favorites - Always Visible */ }
+                    < div className="flex-shrink-0 border-b border-dark-700">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setOnlyFavorites(!onlyFavorites)}
+                    className={`w-full px-4 py-6 rounded-lg font-semibold text-sm transition-smooth ${onlyFavorites
+                        ? 'bg-accent-500 text-white'
+                        : 'bg-dark-800 border border-dark-700 text-dark-300 hover:border-accent-500/50'
                       }`}
-                    >
-                      ♥ Favorites
-                    </motion.button>
-                  </div>
+                  >
+                    ♥ Favorites
+                  </motion.button>
+                </div>
 
-                  {/* Scrollable Filters */}
-                  <div className="overflow-y-auto flex-1 p-6">
-                    <Sidebar
-                      selectedMotion={selectedMotion}
-                      selectedInteraction={selectedInteraction}
-                      selectedVisual={selectedVisual}
-                      onMotionToggle={handleMotionToggle}
-                      onInteractionToggle={handleInteractionToggle}
-                      onVisualToggle={handleVisualToggle}
-                      onDeselectAll={handleDeselectAll}
-                    />
-                  </div>
-                </motion.div>
+                {/* Scrollable Filters */}
+                <div className="overflow-y-auto flex-1 p-6">
+                  <Sidebar
+                    selectedMotion={selectedMotion}
+                    selectedInteraction={selectedInteraction}
+                    selectedVisual={selectedVisual}
+                    onMotionToggle={handleMotionToggle}
+                    onInteractionToggle={handleInteractionToggle}
+                    onVisualToggle={handleVisualToggle}
+                    onDeselectAll={handleDeselectAll}
+                  />
+                </div>
+              </motion.div>
               </motion.div>
             )}
-          </AnimatePresence>
+        </AnimatePresence>
 
-          {/* Animation Cards Grid */}
-          <section className="md:col-span-3">
-            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence mode="popLayout">
-                {filteredAnimations.length > 0 ? (
-                  filteredAnimations.map((anim) => (
-                    <AnimationCardComponent
-                      key={anim.id}
-                      card={anim}
-                      isFavorite={anim.isFavorite}
-                      onToggleFavorite={toggleFavorite}
-                      onCardClick={handleOpenDetailModal}
-                    />
-                  ))
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="col-span-full text-center py-12"
-                  >
-                    <p className="text-dark-400">No animations found. Try adjusting your filters.</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </section>
-        </div>
-      </main>
-
-      {/* Animation Detail Modal */}
-      <AnimationDetailModal
-        animation={selectedAnimation}
-        isOpen={isDetailModalOpen}
-        onClose={handleCloseDetailModal}
-      />
-
-      {/* Footer */}
-      <footer className="border-t border-dark-800 mt-16 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-dark-500 text-sm">
-          <p>© 2024 OWOW Atlas. Professional animation library for creative professionals.</p>
-        </div>
-      </footer>
+        {/* Animation Cards Grid */}
+        <section className="flex-1 min-w-1">
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence mode="popLayout">
+              {filteredAnimations.length > 0 ? (
+                filteredAnimations.map((anim) => (
+                  <AnimationCardComponent
+                    key={anim.id}
+                    card={anim}
+                    isFavorite={anim.isFavorite}
+                    onToggleFavorite={toggleFavorite}
+                    onCardClick={handleOpenDetailModal}
+                  />
+                ))
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="col-span-full text-center py-12"
+                >
+                  <p className="text-dark-400">No animations found. Try adjusting your filters.</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </section>
     </div>
+      </main >
+
+    {/* Animation Detail Modal */ }
+    < AnimationDetailModal
+  animation = { selectedAnimation }
+  isOpen = { isDetailModalOpen }
+  onClose = { handleCloseDetailModal }
+    />
+
+    {/* Footer */ }
+    < footer className = "border-t border-dark-800 mt-16 py-8" >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-dark-500 text-sm">
+        <p>© 2024 OWOW Atlas. Professional animation library for creative professionals.</p>
+      </div>
+      </footer >
+    </div >
   )
 }
