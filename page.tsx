@@ -66,7 +66,7 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
   {
     id: '5',
     title: 'Neon Glow Text',
-    category: 'Website',
+    category: 'Mobile',
     motionBehavior: 'Glow',
     interactionPattern: 'Hover',
     visualCharacter: 'Text',
@@ -76,7 +76,7 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
   {
     id: '6',
     title: 'Liquid Wave Text',
-    category: 'Website',
+    category: 'Mobile',
     motionBehavior: 'Wave',
     interactionPattern: 'Loop',
     visualCharacter: 'Text',
@@ -96,7 +96,7 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
   {
     id: '8',
     title: 'Bounce Text',
-    category: 'Website',
+    category: 'Mobile',
     motionBehavior: 'Bounce',
     interactionPattern: 'Loop',
     visualCharacter: 'Text',
@@ -125,7 +125,7 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
   {
     id: '11',
     title: 'Spin Loader',
-    category: 'Website',
+    category: 'Mobile',
     motionBehavior: 'Rotate',
     interactionPattern: 'Loop',
     visualCharacter: 'Geometric',
@@ -143,7 +143,7 @@ const SAMPLE_ANIMATIONS: AnimationCard[] = [
   {
     id: '13',
     title: 'Glow Circle',
-    category: 'Website',
+    category: 'Mobile',
     motionBehavior: 'GlowPulse',
     interactionPattern: 'Loop',
     visualCharacter: 'Minimal',
