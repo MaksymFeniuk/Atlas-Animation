@@ -434,10 +434,12 @@ function AnimationDetailModal({
   animation,
   isOpen,
   onClose,
+  playbackKey,
 }: {
   animation: AnimationCard | null
   isOpen: boolean
   onClose: () => void
+  playbackKey: number
 }) {
   const [speed, setSpeed] = useState(1)
   const [scale, setScale] = useState(1)
@@ -538,6 +540,7 @@ function AnimationDetailModal({
           transition: { duration: actualSpeed * 2, repeat: Infinity, ease: 'linear' as const },
         },
         SlideShape: {
+          initial: { x: 0, boxShadow: '0 0 0px rgba(255, 5, 110, 0)' },
           animate: { 
             x: [-20 * scale, 20 * scale, -20 * scale],
             boxShadow: ['0 0 0px rgba(255, 5, 110, 0)', '0 0 20px rgba(255, 5, 110, 0.6)', '0 0 0px rgba(255, 5, 110, 0)']
@@ -545,6 +548,7 @@ function AnimationDetailModal({
           transition: { duration: actualSpeed * 2, repeat: Infinity },
         },
         GlowPulse: {
+          initial: { scale: 1, boxShadow: '0 0 5px rgba(0, 245, 255, 0.3)' },
           animate: {
             scale: [1, 1.5, 1],
             boxShadow: ['0 0 5px rgba(0, 245, 255, 0.3)', '0 0 30px rgba(0, 245, 255, 1)', '0 0 5px rgba(0, 245, 255, 0.3)']
@@ -552,6 +556,7 @@ function AnimationDetailModal({
           transition: { duration: actualSpeed * 1.5, repeat: Infinity },
         },
         Rainbow: {
+          initial: { borderColor: '#FF006E', scale: 1 },
           animate: {
             borderColor: ['#FF006E', '#00F5FF', '#FFD700', '#FF006E'],
             scale: [1, 1.05, 1]
@@ -561,6 +566,17 @@ function AnimationDetailModal({
       }
 
   const config = previewVariants[animation.motionBehavior]
+  const previewKey = `${animation.id}-${playbackKey}-${speed}-${scale}`
+  const previewShapeClassName =
+    animation.motionBehavior === 'GlowPulse'
+      ? 'bg-cyan-400 rounded-full'
+      : animation.motionBehavior === 'Rainbow'
+        ? 'border-4 bg-transparent rounded-lg'
+        : animation.motionBehavior === 'Rotate'
+          ? 'border-2 border-accent-500 border-t-transparent rounded-full bg-transparent'
+          : animation.motionBehavior === 'SlideShape'
+            ? 'bg-accent-500 rounded-lg'
+            : 'bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg'
 
   return (
     <AnimatePresence>
@@ -605,7 +621,7 @@ function AnimationDetailModal({
                   {animation?.isText ? (
                     animation.motionBehavior === 'Typing' ? (
                       <motion.div
-                        key={`${speed}-${scale}`}
+                        key={`${previewKey}-${typingCycle}`}
                         initial="hidden"
                         animate="visible"
                         variants={{
@@ -642,7 +658,7 @@ function AnimationDetailModal({
                       </motion.div>
                     ) : (
                       <motion.div
-                        key={`${speed}-${scale}`}
+                        key={previewKey}
                         initial={config.initial}
                         animate={config.animate}
                         transition={config.transition}
@@ -657,11 +673,11 @@ function AnimationDetailModal({
                     )
                   ) : (
                     <motion.div
-                      key={`${speed}-${scale}`}
+                      key={previewKey}
                       initial={config.initial}
                       animate={config.animate}
                       transition={config.transition}
-                      className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
+                      className={previewShapeClassName}
                       style={{ width: actualSize, height: actualSize }}
                     />
                   )}
@@ -766,7 +782,7 @@ function AnimationDetailModal({
 }
 
 // Animation Preview Component
-function AnimationPreview({ type, isText, isHovering = true }: { type: MotionBehavior; isText?: boolean; isHovering?: boolean }) {
+function AnimationPreview({ type, isText, isHovering = false }: { type: MotionBehavior; isText?: boolean; isHovering?: boolean }) {
   // Text animation variants
   if (isText) {
     if (type === 'Typing') {
@@ -775,6 +791,11 @@ function AnimationPreview({ type, isText, isHovering = true }: { type: MotionBeh
 
       const [cycle, setCycle] = useState(0)
       useEffect(() => {
+        if (!isHovering) {
+          setCycle(0)
+          return
+        }
+
         const perLetter = 0.3
         const stagger = 0.08
         const delayChildren = 0.1
@@ -783,43 +804,49 @@ function AnimationPreview({ type, isText, isHovering = true }: { type: MotionBeh
         const id = setInterval(() => setCycle((c) => c + 1), total * 1000)
         return () => clearInterval(id)
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [])
+      }, [isHovering])
 
       return (
         <div className="flex items-center justify-center w-full h-32">
-          <motion.div
-            key={`typing-${cycle}`}
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: {},
-              visible: {
-                transition: {
-                  staggerChildren: 0.08,
-                  delayChildren: 0.1,
-                },
-              },
-            }}
-            className="flex items-center justify-center"
-          >
-            {text.split('').map((char, i) => (
-              <motion.span
-                key={i}
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  visible: {
-                    opacity: 1,
-                    y: -8,
-                    transition: { duration: 0.3 },
+          {isHovering ? (
+            <motion.div
+              key={`typing-${cycle}`}
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: {
+                  transition: {
+                    staggerChildren: 0.08,
+                    delayChildren: 0.1,
                   },
-                }}
-                className="font-bold text-white"
-                style={{ fontSize: '20px' }}
-              >
-                {char}
-              </motion.span>
-            ))}
-          </motion.div>
+                },
+              }}
+              className="flex items-center justify-center"
+            >
+              {text.split('').map((char, i) => (
+                <motion.span
+                  key={i}
+                  variants={{
+                    hidden: { opacity: 0, y: 10 },
+                    visible: {
+                      opacity: 1,
+                      y: -8,
+                      transition: { duration: 0.3 },
+                    },
+                  }}
+                  className="font-bold text-white"
+                  style={{ fontSize: '20px' }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </motion.div>
+          ) : (
+            <span className="font-bold text-dark-300" style={{ fontSize: '20px' }}>
+              Text
+            </span>
+          )}
         </div>
       )
     }
@@ -907,9 +934,47 @@ function AnimationPreview({ type, isText, isHovering = true }: { type: MotionBeh
       animate: { rotate: 360 },
       transition: { duration: 2, repeat: Infinity, ease: 'linear' as const },
     },
+    SlideShape: {
+      initial: { x: 0, boxShadow: '0 0 0px rgba(255, 5, 110, 0)' },
+      animate: {
+        x: [-20, 20, -20],
+        boxShadow: [
+          '0 0 0px rgba(255, 5, 110, 0)',
+          '0 0 20px rgba(255, 5, 110, 0.6)',
+          '0 0 0px rgba(255, 5, 110, 0)',
+        ],
+      },
+      transition: { duration: 2, repeat: Infinity },
+    },
+    GlowPulse: {
+      initial: { scale: 1, boxShadow: '0 0 5px rgba(0, 245, 255, 0.3)' },
+      animate: {
+        scale: [1, 1.35, 1],
+        boxShadow: [
+          '0 0 5px rgba(0, 245, 255, 0.3)',
+          '0 0 26px rgba(0, 245, 255, 0.95)',
+          '0 0 5px rgba(0, 245, 255, 0.3)',
+        ],
+      },
+      transition: { duration: 1.5, repeat: Infinity },
+    },
+    Rainbow: {
+      initial: { borderColor: '#FF006E', scale: 1 },
+      animate: {
+        borderColor: ['#FF006E', '#00F5FF', '#FFD700', '#FF006E'],
+        scale: [1, 1.05, 1],
+      },
+      transition: { duration: 3, repeat: Infinity },
+    },
   }
 
   const config = boxPreviewVariants[type as keyof typeof boxPreviewVariants] || boxPreviewVariants.Fade
+  const shapeClassName =
+    type === 'GlowPulse'
+      ? 'w-10 h-10 bg-cyan-400 rounded-full'
+      : type === 'Rainbow'
+        ? 'w-14 h-14 border-4 rounded-lg bg-transparent'
+        : 'w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg'
 
   return (
     <div className="flex items-center justify-center w-full h-32">
@@ -917,7 +982,7 @@ function AnimationPreview({ type, isText, isHovering = true }: { type: MotionBeh
         initial={config.initial}
         animate={isHovering ? config.animate : config.initial}
         transition={isHovering ? config.transition : { duration: 0 }}
-        className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
+        className={shapeClassName}
       />
     </div>
   )
@@ -935,6 +1000,14 @@ function AnimationCardComponent({
   onToggleFavorite: (id: string) => void
   onCardClick: (animation: AnimationCard) => void
 }) {
+  const [isHovered, setIsHovered] = useState(false)
+  const [isPressed, setIsPressed] = useState(false)
+  const isPreviewActive = isHovered || isPressed
+
+  const openCard = () => {
+    onCardClick(card)
+  }
+
   return (
     <motion.div
       layout
@@ -942,13 +1015,48 @@ function AnimationCardComponent({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
-      onClick={() => onCardClick(card)}
-      className="card-hover group cursor-pointer"
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.985 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => {
+        setIsHovered(false)
+        setIsPressed(false)
+      }}
+      onPointerDown={(event) => {
+        if ((event.target as HTMLElement).closest('button')) return
+        setIsPressed(true)
+      }}
+      onPointerUp={() => setIsPressed(false)}
+      onPointerCancel={() => setIsPressed(false)}
+      onFocus={() => setIsHovered(true)}
+      onBlur={() => {
+        setIsHovered(false)
+        setIsPressed(false)
+      }}
+      onKeyDown={(event) => {
+        if (event.repeat) return
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          setIsPressed(true)
+          openCard()
+        }
+      }}
+      onKeyUp={() => setIsPressed(false)}
+      onClick={openCard}
+      role="button"
+      tabIndex={0}
+      className="card-hover group cursor-pointer outline-none focus-visible:border-accent-500/70 focus-visible:ring-2 focus-visible:ring-accent-500/40"
     >
       <div className="p-4 space-y-4">
         {/* Preview Area */}
-        <div className="w-full bg-dark-900 rounded-lg border border-dark-700 overflow-hidden hover:border-accent-500/50 transition-smooth">
-          <AnimationPreview type={card.motionBehavior} isText={card.isText} isHovering={true} />
+        <div
+          className={`w-full bg-dark-900 rounded-lg border overflow-hidden transition-smooth ${
+            isPreviewActive
+              ? 'border-accent-500/60 shadow-lg shadow-accent-500/10'
+              : 'border-dark-700'
+          }`}
+        >
+          <AnimationPreview type={card.motionBehavior} isText={card.isText} isHovering={isPreviewActive} />
         </div>
 
         {/* Header with Title and Favorite */}
@@ -961,7 +1069,10 @@ function AnimationCardComponent({
               e.stopPropagation()
               onToggleFavorite(card.id)
             }}
+            onPointerDown={(e) => e.stopPropagation()}
             className="mt-0.5 flex-shrink-0 text-dark-400 hover:text-accent-500 transition-colors"
+            type="button"
+            aria-label={isFavorite ? `Remove ${card.title} from favorites` : `Add ${card.title} to favorites`}
           >
             <Heart
               size={18}
@@ -1102,6 +1213,7 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedAnimation, setSelectedAnimation] = useState<AnimationCard | null>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [detailPlaybackKey, setDetailPlaybackKey] = useState(0)
 
     // Load favorites from localStorage on initial render
   useEffect(() => {
@@ -1200,6 +1312,7 @@ const toggleFavorite = (id: string) => {
 
   const handleOpenDetailModal = (animation: AnimationCard) => {
     setSelectedAnimation(animation)
+    setDetailPlaybackKey((key) => key + 1)
     setIsDetailModalOpen(true)
   }
 
@@ -1434,6 +1547,7 @@ const toggleFavorite = (id: string) => {
         animation={selectedAnimation}
         isOpen={isDetailModalOpen}
         onClose={handleCloseDetailModal}
+        playbackKey={detailPlaybackKey}
       />
 
       {/* Footer */}
