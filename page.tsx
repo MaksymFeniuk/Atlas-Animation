@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Menu, X, Heart, Copy, Check } from 'lucide-react'
 
 // Types
-type MotionBehavior = 'Fade' | 'Slide' | 'Scale' | 'Morph' | 'Rotate'
+type MotionBehavior = 'Fade' | 'Slide' | 'Scale' | 'Morph' | 'Rotate' | 'Typing' | 'Gradient' | 'Wave' | 'Glow' | 'Bounce' | 'Shimmer' | 'SlideShape' | 'GlowPulse' | 'Rainbow'
 type InteractionPattern = 'Hover' | 'Scroll' | 'Entrance' | 'Exit' | 'Loop'
-type VisualCharacter = 'Minimal' | 'Organic' | 'Geometric' | 'Abstract' | 'Sharp'
+type VisualCharacter = 'Minimal' | 'Organic' | 'Geometric' | 'Abstract' | 'Sharp' | 'Text'
 type Category = 'All' | 'Website' | 'Mobile'
 
 interface AnimationCard {
@@ -18,142 +18,143 @@ interface AnimationCard {
   interactionPattern: InteractionPattern
   visualCharacter: VisualCharacter
   isFavorite: boolean
+  isText?: boolean
 }
 
 // Sample data
 const SAMPLE_ANIMATIONS: AnimationCard[] = [
   {
     id: '1',
-    title: 'Fade Button Hover',
+    title: 'Typing Reveal',
     category: 'Website',
-    motionBehavior: 'Fade',
-    interactionPattern: 'Hover',
-    visualCharacter: 'Minimal',
+    motionBehavior: 'Typing',
+    interactionPattern: 'Entrance',
+    visualCharacter: 'Text',
     isFavorite: false,
+    isText: true,
   },
   {
     id: '2',
-    title: 'Slide Menu Open',
+    title: 'Split Text Entrance',
     category: 'Website',
     motionBehavior: 'Slide',
     interactionPattern: 'Entrance',
-    visualCharacter: 'Minimal',
+    visualCharacter: 'Text',
     isFavorite: false,
+    isText: true,
   },
   {
     id: '3',
-    title: 'Scale Icon Click',
-    category: 'Mobile',
-    motionBehavior: 'Scale',
-    interactionPattern: 'Hover',
-    visualCharacter: 'Geometric',
-    isFavorite: false,
-  },
-  {
-    id: '4',
-    title: 'Morph Shape Transition',
-    category: 'Website',
-    motionBehavior: 'Morph',
-    interactionPattern: 'Scroll',
-    visualCharacter: 'Organic',
-    isFavorite: false,
-  },
-  {
-    id: '5',
-    title: 'Rotate Loading Spinner',
+    title: 'Rotating Letters',
     category: 'Website',
     motionBehavior: 'Rotate',
     interactionPattern: 'Loop',
-    visualCharacter: 'Geometric',
+    visualCharacter: 'Text',
     isFavorite: false,
+    isText: true,
+  },
+  {
+    id: '4',
+    title: 'Glitch Effect',
+    category: 'Website',
+    motionBehavior: 'Scale',
+    interactionPattern: 'Loop',
+    visualCharacter: 'Text',
+    isFavorite: false,
+    isText: true,
+  },
+  {
+    id: '5',
+    title: 'Neon Glow Text',
+    category: 'Website',
+    motionBehavior: 'Glow',
+    interactionPattern: 'Hover',
+    visualCharacter: 'Text',
+    isFavorite: false,
+    isText: true,
   },
   {
     id: '6',
-    title: 'Fade Card Entrance',
-    category: 'Mobile',
-    motionBehavior: 'Fade',
-    interactionPattern: 'Entrance',
-    visualCharacter: 'Minimal',
+    title: 'Liquid Wave Text',
+    category: 'Website',
+    motionBehavior: 'Wave',
+    interactionPattern: 'Loop',
+    visualCharacter: 'Text',
     isFavorite: false,
+    isText: true,
   },
   {
     id: '7',
-    title: 'Scale Popup Modal',
+    title: 'Color Cycle',
     category: 'Website',
-    motionBehavior: 'Scale',
-    interactionPattern: 'Entrance',
-    visualCharacter: 'Minimal',
+    motionBehavior: 'Gradient',
+    interactionPattern: 'Loop',
+    visualCharacter: 'Text',
     isFavorite: false,
+    isText: true,
   },
   {
     id: '8',
-    title: 'Slide Sidebar Navigation',
-    category: 'Mobile',
-    motionBehavior: 'Slide',
-    interactionPattern: 'Hover',
-    visualCharacter: 'Sharp',
+    title: 'Bounce Text',
+    category: 'Website',
+    motionBehavior: 'Bounce',
+    interactionPattern: 'Loop',
+    visualCharacter: 'Text',
     isFavorite: false,
+    isText: true,
   },
   {
     id: '9',
-    title: 'Morph Abstract Shape',
+    title: 'Shimmer Text',
     category: 'Website',
-    motionBehavior: 'Morph',
-    interactionPattern: 'Hover',
-    visualCharacter: 'Abstract',
+    motionBehavior: 'Shimmer',
+    interactionPattern: 'Loop',
+    visualCharacter: 'Text',
     isFavorite: false,
+    isText: true,
   },
   {
     id: '10',
-    title: 'Rotate Badge Indicator',
-    category: 'Mobile',
-    motionBehavior: 'Rotate',
-    interactionPattern: 'Scroll',
-    visualCharacter: 'Minimal',
+    title: 'Organic Blob',
+    category: 'Website',
+    motionBehavior: 'Morph',
+    interactionPattern: 'Loop',
+    visualCharacter: 'Organic',
     isFavorite: false,
   },
   {
     id: '11',
-    title: 'Fade Background Blur',
+    title: 'Spin Loader',
     category: 'Website',
-    motionBehavior: 'Fade',
-    interactionPattern: 'Exit',
-    visualCharacter: 'Minimal',
+    motionBehavior: 'Rotate',
+    interactionPattern: 'Loop',
+    visualCharacter: 'Geometric',
     isFavorite: false,
   },
   {
     id: '12',
-    title: 'Slide List Item Remove',
-    category: 'Mobile',
-    motionBehavior: 'Slide',
-    interactionPattern: 'Exit',
-    visualCharacter: 'Minimal',
+    title: 'Slide In Box',
+    category: 'Website',
+    motionBehavior: 'SlideShape',
+    interactionPattern: 'Loop',
+    visualCharacter: 'Geometric',
     isFavorite: false,
   },
   {
     id: '13',
-    title: 'Scale Text Emphasis',
+    title: 'Glow Circle',
     category: 'Website',
-    motionBehavior: 'Scale',
-    interactionPattern: 'Scroll',
-    visualCharacter: 'Sharp',
+    motionBehavior: 'GlowPulse',
+    interactionPattern: 'Loop',
+    visualCharacter: 'Minimal',
     isFavorite: false,
   },
   {
     id: '14',
-    title: 'Organic Blob Movement',
+    title: 'Rainbow Border',
     category: 'Website',
-    motionBehavior: 'Morph',
+    motionBehavior: 'Rainbow',
     interactionPattern: 'Loop',
-    visualCharacter: 'Organic',
-    isFavorite: false,
-  },
-  {
-    id: '15',
-    title: 'Geometric Pattern Rotate',
-    category: 'Mobile',
-    motionBehavior: 'Rotate',
-    interactionPattern: 'Entrance',
     visualCharacter: 'Geometric',
     isFavorite: false,
   },
@@ -168,154 +169,204 @@ function saveFavourites(animations: AnimationCard[]) {
 // Animation documentation and code
 const ANIMATION_DETAILS: Record<string, { code: string; documentation: string; defaultSpeed: number; defaultSize: number }> = {
   '1': {
-    code: `<motion.button
-  initial={{ opacity: 1 }}
-  whileHover={{ opacity: 0.3 }}
-  transition={{ duration: 0.3 }}
->
-  Hover Me
-</motion.button>`,
-    documentation: 'A smooth fade effect on hover. Perfect for button interactions and UI feedback.',
-    defaultSpeed: 0.3,
-    defaultSize: 48,
+    code: `const chars = text.split('');
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.3,
+    },
+  },
+};
+
+const charVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+<motion.div variants={containerVariants}>
+  {chars.map((char, i) => (
+    <motion.span key={i} variants={charVariants}>
+      {char}
+    </motion.span>
+  ))}
+</motion.div>`,
+    documentation: 'Character-by-character typing effect. Each letter reveals smoothly for authentic text reveal.',
+    defaultSpeed: 2,
+    defaultSize: 20,
   },
   '2': {
-    code: `<motion.div
-  initial={{ x: -300 }}
-  animate={{ x: 0 }}
-  transition={{ duration: 0.5 }}
->
-  Sliding Menu
+    code: `const wordVariants = {
+  hidden: (dir) => ({
+    x: dir > 0 ? 100 : -100,
+    opacity: 0,
+  }),
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: { type: 'spring', stiffness: 100 },
+  },
+};
+
+<motion.div>
+  <motion.span custom={-1} variants={wordVariants}>
+    Split
+  </motion.span>
+  <motion.span custom={1} variants={wordVariants}>
+    Text
+  </motion.span>
 </motion.div>`,
-    documentation: 'Slides in from the left. Ideal for menu and sidebar animations.',
-    defaultSpeed: 0.5,
-    defaultSize: 64,
+    documentation: 'Text splits and slides in from opposite sides. Perfect for dramatic entrances.',
+    defaultSpeed: 1.2,
+    defaultSize: 20,
   },
   '3': {
-    code: `<motion.button
-  whileHover={{ scale: 1.2 }}
-  whileTap={{ scale: 0.95 }}
-  transition={{ duration: 0.2 }}
->
-  Icon
-</motion.button>`,
-    documentation: 'Scales up on hover, great for interactive icons and call-to-action buttons.',
-    defaultSpeed: 0.2,
-    defaultSize: 40,
+    code: `const letterVariants = {
+  animate: (i) => ({
+    rotateY: [0, 360],
+    transition: { delay: i * 0.1, duration: 1.5, repeat: Infinity },
+  }),
+};
+
+<motion.div className="flex">
+  {text.split('').map((char, i) => (
+    <motion.span
+      key={i}
+      custom={i}
+      animate="animate"
+      variants={letterVariants}
+      style={{ perspective: '1000px' }}
+    >
+      {char}
+    </motion.span>
+  ))}
+</motion.div>`,
+    documentation: '3D rotation effect on each letter. Creates mesmerizing spinning text.',
+    defaultSpeed: 1.5,
+    defaultSize: 20,
   },
   '4': {
-    code: `<motion.div
-  initial={{ borderRadius: '50%' }}
-  whileHover={{ borderRadius: '0%' }}
-  transition={{ duration: 0.5 }}
-  className="w-20 h-20 bg-gradient-to-br from-accent-500 to-accent-600"
-/>`,
-    documentation: 'Morphs between circle and square. Creates organic shape transitions.',
-    defaultSpeed: 0.5,
-    defaultSize: 80,
+    code: `<motion.h2
+  animate={{
+    x: [-2, 2, -2, 2, 0],
+    textShadow: [
+      '0 0 0px rgba(255,0,0,0)',
+      '3px 3px 0px rgba(255,0,0,0.8)',
+      '-3px -3px 0px rgba(0,0,255,0.8)',
+      '0 0 0px rgba(255,0,0,0)',
+    ]
+  }}
+  transition={{ duration: 0.3, repeat: Infinity, repeatDelay: 1 }}
+  className="text-white font-bold"
+>
+  Glitch!
+</motion.h2>`,
+    documentation: 'Glitch effect with RGB color shift. Edgy, tech-inspired animation.',
+    defaultSpeed: 1,
+    defaultSize: 20,
   },
   '5': {
-    code: `<motion.div
-  animate={{ rotate: 360 }}
-  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-  className="w-8 h-8 border-2 border-accent-500 rounded-full border-t-transparent"
-/>`,
-    documentation: 'Continuous rotation. Perfect for loading spinners and circular progress.',
+    code: `<motion.h2
+  animate={{
+    textShadow: [
+      '0 0 5px #1847BD, 0 0 10px #1847BD',
+      '0 0 20px #1847BD, 0 0 30px #1847BD, 0 0 40px #FF006E',
+      '0 0 5px #1847BD, 0 0 10px #1847BD',
+    ]
+  }}
+  transition={{ duration: 2, repeat: Infinity }}
+  className="text-white font-bold"
+>
+  Neon Glow
+</motion.h2>`,
+    documentation: 'Neon glow with color pulse. Perfect for cyber and modern designs.',
     defaultSpeed: 2,
-    defaultSize: 32,
+    defaultSize: 20,
   },
   '6': {
-    code: `<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.4 }}
->
-  Card Content
+    code: `const letterVariants = {
+  animate: (i) => ({
+    y: [0, -15, 0],
+    x: [0, Math.sin(i) * 10, 0],
+    transition: {
+      delay: i * 0.1,
+      duration: 2,
+      repeat: Infinity,
+    }
+  }),
+};
+
+<motion.div className="flex gap-1">
+  {text.split('').map((char, i) => (
+    <motion.span
+      key={i}
+      custom={i}
+      animate="animate"
+      variants={letterVariants}
+    >
+      {char}
+    </motion.span>
+  ))}
 </motion.div>`,
-    documentation: 'Fades in while sliding up. Elegant entrance for cards and content blocks.',
-    defaultSpeed: 0.4,
-    defaultSize: 100,
+    documentation: 'Liquid wave motion on text. Organic, flowing effect.',
+    defaultSpeed: 2,
+    defaultSize: 20,
   },
   '7': {
-    code: `<motion.div
-  initial={{ scale: 0 }}
-  animate={{ scale: 1 }}
-  transition={{ duration: 0.3, type: 'spring' }}
+    code: `<motion.h2
+  animate={{
+    color: [
+      '#1847BD',
+      '#FF006E',
+      '#00F5FF',
+      '#FFD700',
+      '#1847BD'
+    ]
+  }}
+  transition={{
+    duration: 5,
+    repeat: Infinity,
+  }}
+  className="font-bold"
 >
-  Modal Content
-</motion.div>`,
-    documentation: 'Pops in with a spring effect. Great for modals and popup animations.',
-    defaultSpeed: 0.3,
-    defaultSize: 120,
+  Color Cycle
+</motion.h2>`,
+    documentation: 'Text cycles through vibrant colors. Eye-catching and dynamic.',
+    defaultSpeed: 5,
+    defaultSize: 20,
   },
   '8': {
-    code: `<motion.div
-  initial={{ x: 0 }}
-  whileHover={{ x: 10 }}
-  transition={{ duration: 0.3 }}
+    code: `<motion.h2
+  animate={{
+    y: [0, -15, 0],
+    opacity: [1, 0.6, 1]
+  }}
+  transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 0.5 }}
+  className="text-white font-bold"
 >
-  Navigation Item
-</motion.div>`,
-    documentation: 'Slides horizontally on interaction. Perfect for navigation menus.',
-    defaultSpeed: 0.3,
-    defaultSize: 60,
+  Bounce
+</motion.h2>`,
+    documentation: 'Text bounces with opacity pulse. Playful, energetic effect.',
+    defaultSpeed: 1,
+    defaultSize: 20,
   },
   '9': {
-    code: `<motion.svg
-  initial={{ d: 'path1' }}
-  animate={{ d: 'path2' }}
-  transition={{ duration: 1 }}
-/>`,
-    documentation: 'Abstract SVG morphing animation. Ideal for creative, artistic transitions.',
-    defaultSpeed: 1,
-    defaultSize: 100,
+    code: `<motion.h2
+  animate={{
+    opacity: [0.3, 1, 0.3]
+  }}
+  transition={{ duration: 1.5, repeat: Infinity }}
+  className="text-white font-bold"
+>
+  Shimmer
+</motion.h2>`,
+    documentation: 'Sparkling shimmer effect. Creates a twinkling text appearance.',
+    defaultSpeed: 1.5,
+    defaultSize: 20,
   },
   '10': {
-    code: `<motion.div
-  animate={{ rotate: 360 }}
-  transition={{ duration: 1.5, repeat: Infinity }}
-  className="w-6 h-6 rounded-full bg-accent-500"
-/>`,
-    documentation: 'Rotates badges and indicators. Works well for notification badges.',
-    defaultSpeed: 1.5,
-    defaultSize: 24,
-  },
-  '11': {
-    code: `<motion.div
-  initial={{ opacity: 1 }}
-  animate={{ opacity: 0 }}
-  transition={{ duration: 0.5 }}
-  className="fixed inset-0 bg-black"
-/>`,
-    documentation: 'Fades out a backdrop or overlay. Perfect for closing animations.',
-    defaultSpeed: 0.5,
-    defaultSize: 100,
-  },
-  '12': {
-    code: `<motion.div
-  initial={{ x: 0 }}
-  exit={{ x: 300, opacity: 0 }}
-  transition={{ duration: 0.3 }}
->
-  List Item
-</motion.div>`,
-    documentation: 'Slides out to the right when removed. Great for swipe delete animations.',
-    defaultSpeed: 0.3,
-    defaultSize: 80,
-  },
-  '13': {
-    code: `<motion.span
-  initial={{ scale: 1 }}
-  whileInView={{ scale: 1.1 }}
-  transition={{ duration: 0.4 }}
->
-  Emphasized Text
-</motion.span>`,
-    documentation: 'Scales text for emphasis. Perfect for highlighting important information.',
-    defaultSpeed: 0.4,
-    defaultSize: 48,
-  },
-  '14': {
     code: `<motion.div
   animate={{
     borderRadius: ['50%', '30%', '70%', '50%']
@@ -327,16 +378,54 @@ const ANIMATION_DETAILS: Record<string, { code: string; documentation: string; d
     defaultSpeed: 3,
     defaultSize: 128,
   },
-  '15': {
-    code: `<motion.svg
+  '11': {
+    code: `<motion.div
   animate={{ rotate: 360 }}
   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
->
-  <circle cx="50" cy="50" r="45" />
-</motion.svg>`,
-    documentation: 'Rotates geometric patterns. Great for decorative and interactive elements.',
+  className="w-8 h-8 border-2 border-accent-500 rounded-full border-t-transparent"
+/>`,
+    documentation: 'Continuous rotation. Perfect for loading spinners and circular progress.',
     defaultSpeed: 2,
-    defaultSize: 100,
+    defaultSize: 32,
+  },
+  '12': {
+    code: `<motion.div
+  animate={{
+    x: [-20, 20, -20],
+    boxShadow: ['0 0 0px rgba(255, 5, 110, 0)', '0 0 20px rgba(255, 5, 110, 0.6)', '0 0 0px rgba(255, 5, 110, 0)']
+  }}
+  transition={{ duration: 2, repeat: Infinity }}
+  className="w-12 h-12 bg-accent-500 rounded-lg"
+/>`,
+    documentation: 'Box slides horizontally with glowing shadow. Smooth, directional motion.',
+    defaultSpeed: 2,
+    defaultSize: 48,
+  },
+  '13': {
+    code: `<motion.div
+  animate={{
+    scale: [1, 1.5, 1],
+    boxShadow: ['0 0 5px rgba(0, 245, 255, 0.3)', '0 0 30px rgba(0, 245, 255, 1)', '0 0 5px rgba(0, 245, 255, 0.3)']
+  }}
+  transition={{ duration: 1.5, repeat: Infinity }}
+  className="w-10 h-10 bg-cyan-400 rounded-full"
+/>`,
+    documentation: 'Circle with cyan glow pulse. Eye-catching and luminous.',
+    defaultSpeed: 1.5,
+    defaultSize: 40,
+  },
+  '14': {
+    code: `<motion.div
+  animate={{
+    borderColor: ['#FF006E', '#00F5FF', '#FFD700', '#FF006E'],
+    scale: [1, 1.05, 1]
+  }}
+  transition={{ duration: 3, repeat: Infinity }}
+  className="w-16 h-16 border-4 rounded-lg"
+/>`,
+    documentation: 'Square with rainbow border animation. Vibrant and colorful.',
+    defaultSpeed: 3,
+    defaultSize: 64,
   },
 }
 
@@ -356,6 +445,21 @@ function AnimationDetailModal({
 
   const details = animation ? ANIMATION_DETAILS[animation.id] : null
 
+  const [typingCycle, setTypingCycle] = useState(0)
+
+  useEffect(() => {
+    if (!animation || !details) return
+    if (!animation.isText || animation.motionBehavior !== 'Typing') return
+    const text = 'Text'
+    const perLetter = 0.3 / speed
+    const stagger = 0.08 / speed
+    const delayChildren = 0.1
+    const pause = 0.5
+    const total = delayChildren + perLetter + stagger * (text.length - 1) + pause
+    const id = setInterval(() => setTypingCycle((c) => c + 1), total * 1000)
+    return () => clearInterval(id)
+  }, [animation, details, speed])
+
   if (!animation || !details) return null
 
   const copyCode = () => {
@@ -367,33 +471,94 @@ function AnimationDetailModal({
   const actualSpeed = details.defaultSpeed / speed
   const actualSize = details.defaultSize * scale
 
-  const previewVariants = {
-    Fade: {
-      initial: { opacity: 1 },
-      animate: { opacity: 0.3 },
-      transition: { duration: actualSpeed * 1.5, repeat: Infinity, repeatType: 'reverse' as const },
-    },
-    Slide: {
-      initial: { x: -20 * scale },
-      animate: { x: 20 * scale },
-      transition: { duration: actualSpeed * 1.5, repeat: Infinity, repeatType: 'reverse' as const },
-    },
-    Scale: {
-      initial: { scale: 1 },
-      animate: { scale: 1.2 },
-      transition: { duration: actualSpeed * 1.5, repeat: Infinity, repeatType: 'reverse' as const },
-    },
-    Morph: {
-      initial: { borderRadius: '50%' },
-      animate: { borderRadius: '0%' },
-      transition: { duration: actualSpeed * 1.5, repeat: Infinity, repeatType: 'reverse' as const },
-    },
-    Rotate: {
-      initial: { rotate: 0 },
-      animate: { rotate: 360 },
-      transition: { duration: actualSpeed * 2, repeat: Infinity, ease: 'linear' as const },
-    },
-  }
+  const previewVariants: Record<string, any> = animation?.isText
+    ? {
+        Typing: {
+          container: {
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.08 / speed,
+                delayChildren: 0.1,
+              },
+            },
+          },
+          char: {
+            hidden: { opacity: 0, y: 10 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.3 / speed },
+            },
+          },
+        },
+        Slide: {
+          animate: { x: [-10 * scale, 10 * scale, -10 * scale] },
+          transition: { duration: actualSpeed * 1.5, repeat: Infinity },
+        },
+        Rotate: {
+          animate: { rotateY: [0, 360] },
+          transition: { duration: actualSpeed * 1.5, repeat: Infinity },
+        },
+        Scale: {
+          animate: { x: [-2 * scale, 2 * scale, -2 * scale, 2 * scale, 0] },
+          transition: { duration: actualSpeed * 0.4, repeat: Infinity, repeatDelay: actualSpeed },
+        },
+        Glow: {
+          animate: { textShadow: ['0 0 5px #FF006E', '0 0 20px #FF006E', '0 0 5px #FF006E'] },
+          transition: { duration: actualSpeed, repeat: Infinity },
+        },
+        Wave: {
+          animate: { y: [0, -8 * scale, 0] },
+          transition: { duration: actualSpeed, repeat: Infinity },
+        },
+        Gradient: {
+          animate: { color: ['#00F5FF', '#FFD700', '#FF006E', '#00F5FF'] },
+          transition: { duration: actualSpeed * 2.5, repeat: Infinity },
+        },
+        Bounce: {
+          animate: { y: [0, -15 * scale, 0], opacity: [1, 0.6, 1] },
+          transition: { duration: actualSpeed * 0.6, repeat: Infinity, repeatDelay: actualSpeed * 0.5 },
+        },
+        Shimmer: {
+          animate: { opacity: [0.3, 1, 0.3] },
+          transition: { duration: actualSpeed * 1.5, repeat: Infinity },
+        },
+      }
+    : {
+        Morph: {
+          initial: { borderRadius: '50%' },
+          animate: { borderRadius: '0%' },
+          transition: { duration: actualSpeed * 1.5, repeat: Infinity, repeatType: 'reverse' as const },
+        },
+        Rotate: {
+          initial: { rotate: 0 },
+          animate: { rotate: 360 },
+          transition: { duration: actualSpeed * 2, repeat: Infinity, ease: 'linear' as const },
+        },
+        SlideShape: {
+          animate: { 
+            x: [-20 * scale, 20 * scale, -20 * scale],
+            boxShadow: ['0 0 0px rgba(255, 5, 110, 0)', '0 0 20px rgba(255, 5, 110, 0.6)', '0 0 0px rgba(255, 5, 110, 0)']
+          },
+          transition: { duration: actualSpeed * 2, repeat: Infinity },
+        },
+        GlowPulse: {
+          animate: {
+            scale: [1, 1.5, 1],
+            boxShadow: ['0 0 5px rgba(0, 245, 255, 0.3)', '0 0 30px rgba(0, 245, 255, 1)', '0 0 5px rgba(0, 245, 255, 0.3)']
+          },
+          transition: { duration: actualSpeed * 1.5, repeat: Infinity },
+        },
+        Rainbow: {
+          animate: {
+            borderColor: ['#FF006E', '#00F5FF', '#FFD700', '#FF006E'],
+            scale: [1, 1.05, 1]
+          },
+          transition: { duration: actualSpeed * 3, repeat: Infinity },
+        },
+      }
 
   const config = previewVariants[animation.motionBehavior]
 
@@ -437,14 +602,69 @@ function AnimationDetailModal({
               <div className="flex-shrink-0 w-1/2 border-r border-dark-700 p-6 flex flex-col items-center justify-center bg-dark-800/50">
                 <h3 className="text-lg font-semibold text-white mb-4 w-full">Preview</h3>
                 <div className="w-full h-full bg-dark-800 rounded-lg border border-dark-700 overflow-hidden p-8 flex items-center justify-center">
-                  <motion.div
-                    key={`${speed}-${scale}`}
-                    initial={config.initial}
-                    animate={config.animate}
-                    transition={config.transition}
-                    className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
-                    style={{ width: actualSize, height: actualSize }}
-                  />
+                  {animation?.isText ? (
+                    animation.motionBehavior === 'Typing' ? (
+                      <motion.div
+                        key={`${speed}-${scale}`}
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                          hidden: { opacity: 0 },
+                          visible: {
+                            opacity: 1,
+                            transition: {
+                              staggerChildren: 0.08 / speed,
+                              delayChildren: 0.1,
+                              repeat: Infinity,
+                              repeatDelay: 0.5,
+                            },
+                          },
+                        }}
+                        className="flex items-center justify-center"
+                      >
+                        {'Text'.split('').map((char, i) => (
+                          <motion.span
+                            key={i}
+                            variants={{
+                              hidden: { opacity: 0, y: 10 },
+                              visible: {
+                                opacity: 1,
+                                y: -8,
+                                transition: { duration: 0.3 / speed },
+                              },
+                            }}
+                            className="font-bold text-white"
+                            style={{ fontSize: `${28 * scale}px` }}
+                          >
+                            {char}
+                          </motion.span>
+                        ))}
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key={`${speed}-${scale}`}
+                        initial={config.initial}
+                        animate={config.animate}
+                        transition={config.transition}
+                        className="font-bold text-white"
+                        style={{ 
+                          fontSize: `${28 * scale}px`, 
+                          lineHeight: '1.2'
+                        }}
+                      >
+                        Animate
+                      </motion.div>
+                    )
+                  ) : (
+                    <motion.div
+                      key={`${speed}-${scale}`}
+                      initial={config.initial}
+                      animate={config.animate}
+                      transition={config.transition}
+                      className="bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
+                      style={{ width: actualSize, height: actualSize }}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -546,8 +766,122 @@ function AnimationDetailModal({
 }
 
 // Animation Preview Component
-function AnimationPreview({ type }: { type: MotionBehavior }) {
-  const previewVariants = {
+function AnimationPreview({ type, isText, isHovering = true }: { type: MotionBehavior; isText?: boolean; isHovering?: boolean }) {
+  // Text animation variants
+  if (isText) {
+    if (type === 'Typing') {
+      // Actual typing effect with individual letters
+      const text = 'Text'
+
+      const [cycle, setCycle] = useState(0)
+      useEffect(() => {
+        const perLetter = 0.3
+        const stagger = 0.08
+        const delayChildren = 0.1
+        const pause = 0.5
+        const total = delayChildren + perLetter + stagger * (text.length - 1) + pause
+        const id = setInterval(() => setCycle((c) => c + 1), total * 1000)
+        return () => clearInterval(id)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [])
+
+      return (
+        <div className="flex items-center justify-center w-full h-32">
+          <motion.div
+            key={`typing-${cycle}`}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.08,
+                  delayChildren: 0.1,
+                },
+              },
+            }}
+            className="flex items-center justify-center"
+          >
+            {text.split('').map((char, i) => (
+              <motion.span
+                key={i}
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: {
+                    opacity: 1,
+                    y: -8,
+                    transition: { duration: 0.3 },
+                  },
+                }}
+                className="font-bold text-white"
+                style={{ fontSize: '20px' }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </motion.div>
+        </div>
+      )
+    }
+
+    const textPreviewVariants: Record<string, any> = {
+      Slide: {
+        animate: { x: [-10, 10, -10] },
+        transition: { duration: 1.5, repeat: Infinity },
+      },
+      Rotate: {
+        animate: { rotateY: [0, 360] },
+        transition: { duration: 1.5, repeat: Infinity },
+      },
+      Scale: {
+        animate: { x: [-2, 2, -2, 2, 0] },
+        transition: { duration: 0.4, repeat: Infinity, repeatDelay: 1 },
+      },
+      Glow: {
+        animate: { textShadow: ['0 0 5px #FF006E', '0 0 20px #FF006E', '0 0 5px #FF006E'] },
+        transition: { duration: 2, repeat: Infinity },
+      },
+      Wave: {
+        animate: { y: [0, -8, 0] },
+        transition: { duration: 1, repeat: Infinity },
+      },
+      Gradient: {
+        animate: { color: ['#00F5FF', '#FFD700', '#FF006E', '#00F5FF'] },
+        transition: { duration: 5, repeat: Infinity },
+      },
+      Bounce: {
+        animate: { y: [0, -10, 0], opacity: [1, 0.6, 1] },
+        transition: { duration: 0.6, repeat: Infinity, repeatDelay: 0.5 },
+      },
+      Shimmer: {
+        animate: { opacity: [0.3, 1, 0.3] },
+        transition: { duration: 1.5, repeat: Infinity },
+      },
+    }
+
+    const config = textPreviewVariants[type] || textPreviewVariants.Slide
+
+    return (
+      <div className="flex items-center justify-center w-full h-32">
+        {!isHovering ? (
+          <span className="font-bold text-white text-dark-400">Text</span>
+        ) : (
+          <motion.div
+            initial={config.initial}
+            animate={config.animate}
+            transition={config.transition}
+            className="font-bold text-white"
+            style={{ fontSize: '20px', perspective: '1000px' }}
+          >
+            Text
+          </motion.div>
+        )}
+      </div>
+    )
+  }
+
+  // Box animation variants
+  const boxPreviewVariants = {
     Fade: {
       initial: { opacity: 1 },
       animate: { opacity: 0.3 },
@@ -575,14 +909,14 @@ function AnimationPreview({ type }: { type: MotionBehavior }) {
     },
   }
 
-  const config = previewVariants[type]
+  const config = boxPreviewVariants[type as keyof typeof boxPreviewVariants] || boxPreviewVariants.Fade
 
   return (
     <div className="flex items-center justify-center w-full h-32">
       <motion.div
         initial={config.initial}
-        animate={config.animate}
-        transition={config.transition}
+        animate={isHovering ? config.animate : config.initial}
+        transition={isHovering ? config.transition : { duration: 0 }}
         className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-lg"
       />
     </div>
@@ -614,7 +948,7 @@ function AnimationCardComponent({
       <div className="p-4 space-y-4">
         {/* Preview Area */}
         <div className="w-full bg-dark-900 rounded-lg border border-dark-700 overflow-hidden hover:border-accent-500/50 transition-smooth">
-          <AnimationPreview type={card.motionBehavior} />
+          <AnimationPreview type={card.motionBehavior} isText={card.isText} isHovering={true} />
         </div>
 
         {/* Header with Title and Favorite */}
@@ -717,9 +1051,9 @@ function Sidebar({
   onVisualToggle: (option: string) => void
   onDeselectAll: () => void
 }) {
-  const motionBehaviors: MotionBehavior[] = ['Fade', 'Slide', 'Scale', 'Morph', 'Rotate']
+  const motionBehaviors: MotionBehavior[] = ['Typing', 'Slide', 'Rotate', 'Scale', 'Glow', 'Wave', 'Gradient', 'Bounce', 'Shimmer', 'Morph', 'SlideShape', 'GlowPulse', 'Rainbow']
   const interactionPatterns: InteractionPattern[] = ['Hover', 'Scroll', 'Entrance', 'Exit', 'Loop']
-  const visualCharacters: VisualCharacter[] = ['Minimal', 'Organic', 'Geometric', 'Abstract', 'Sharp']
+  const visualCharacters: VisualCharacter[] = ['Minimal', 'Organic', 'Geometric', 'Abstract', 'Sharp', 'Text']
 
   return (
     <div className="space-y-6">
