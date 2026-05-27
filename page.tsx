@@ -667,20 +667,20 @@ function FilterSection({
   onToggle: (option: string) => void
 }) {
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-dark-300 uppercase tracking-wide">{title}</h3>
-      <div className="space-y-2">
+    <div className="space-y-2">
+      <h3 className="text-sm font-semibold text-dark-200 uppercase tracking-wide">{title}</h3>
+      <div className="space-y-1">
         {options.map((option) => (
-          <label key={option} className="flex items-center gap-3 cursor-pointer group">
+          <label key={option} className="flex items-center gap-2.5 cursor-pointer group">
             <div
-              className={`flex-shrink-0 w-5 h-5 rounded-full border-2 transition-all duration-200 flex items-center justify-center ${
+              className={`flex-shrink-0 w-3 h-3  border-2 transition-all duration-200 flex items-center justify-center ${
                 selectedOptions.includes(option)
-                  ? 'bg-accent-500 border-accent-500'
+                  ? 'bg-dark-200 border-dark-200'
                   : 'border-dark-500 bg-transparent'
               }`}
             >
               {selectedOptions.includes(option) && (
-                <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                <div className="w-1.5 h-1.5 "></div>
               )}
             </div>
             <input
