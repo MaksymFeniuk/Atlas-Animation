@@ -4,14 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'PP Neue Montreal';
-  src: url('https://db.onlinewebfonts.com/t/9b35f2dd0f4b4b0e8b6e8b6e8b6e8b6e.woff2') format('woff2'),
-       url('https://db.onlinewebfonts.com/t/9b35f2dd0f4b4b0e8b6e8b6e8b6e8b6e.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
-
 * {
   @apply scroll-smooth;
 }
