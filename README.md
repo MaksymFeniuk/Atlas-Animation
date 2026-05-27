@@ -46,12 +46,10 @@ npm start
 ## Project Structure
 
 ```
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx          # Root layout
-│   │   ├── page.tsx            # Main page with all components
-│   │   └── globals.css         # Global styles
-│   └── types.ts                # TypeScript interfaces
+├── app/
+├── layout.tsx          # Root layout
+├── page.tsx            # Main page with all 
+├── global.css.         # Main styling 
 ├── types.ts                    # Type definitions (root level)
 ├── package.json                # Dependencies
 ├── tailwind.config.ts          # Tailwind configuration
